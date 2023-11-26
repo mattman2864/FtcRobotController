@@ -22,6 +22,8 @@ public class TeleOpControl {
     public void intake () {
         if (controller.B()) {
             intake.on(1);
+        } else if (controller.dpadLeft()) {
+            intake.reverse(0.3);
         } else {
             intake.off();
         }
@@ -33,6 +35,12 @@ public class TeleOpControl {
         }
         if (controller.dpadDownOnce()) {
             lift.setPosition(0);
+        }
+        if (lift.getPosition() > 3000) {
+            flipgrip.open();
+        }
+        else {
+            flipgrip.close();
         }
     }
     public void flipGrip () {

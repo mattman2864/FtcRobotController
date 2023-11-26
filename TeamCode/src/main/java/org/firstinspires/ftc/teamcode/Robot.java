@@ -18,13 +18,19 @@ class Intake {
         // Assigning motors
         lower_infeed = hardwareMap.get(DcMotor.class, "lower_infeed");
         upper_infeed = hardwareMap.get(DcMotor.class, "upper_infeed");
-        upper_infeed.setDirection(DcMotorSimple.Direction.REVERSE);
+        lower_infeed.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void on(double speed) {
         lower_infeed.setPower(speed);
         upper_infeed.setPower(speed);
     }
+
+    public void reverse(double speed) {
+        lower_infeed.setPower(-speed);
+        upper_infeed.setPower(-speed);
+    }
+
     public void off() {
         lower_infeed.setPower(0);
         upper_infeed.setPower(0);
@@ -40,7 +46,7 @@ class Lift {
         lift = hardwareMap.get(DcMotor.class, "lift");
         power = 1;
         maxHeight = 4300;
-        // Resetting Encoder of lift motor and setting it to "RUN_TO_POSITION" mode
+//         Resetting Encoder of lift motor and setting it to "RUN_TO_POSITION" mode
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setTargetPosition(0);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -63,6 +69,9 @@ class Lift {
         if (lift.getTargetPosition() == 0 && Math.abs(lift.getCurrentPosition()) < 10) {
             off();
         }
+    }
+    int getPosition() {
+        return lift.getCurrentPosition();
     }
 }
 
@@ -119,9 +128,15 @@ class FlipGrip {
             flip.setPosition(0.54);
         }
         else {
-            flip.setPosition(0.2);
+            flip.setPosition(0.05);
         }
         flipped = !flipped;
+    }
+    void open() {
+        flip.setPosition(0.05);
+    }
+    void close() {
+        flip.setPosition(0.54);
     }
     void grip () {
         if (gripped) {
