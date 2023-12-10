@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.RRDrive.trajectorysequence.TrajectorySeque
 
 @Autonomous(name = "RED_RIGHT", preselectTeleOp = "MainTeleOp")
 public class RedRight extends LinearOpMode {
+
     public void runOpMode() {
 
         telemetry.addLine("Initializing...");

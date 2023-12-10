@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 // Controller
 // For Camera
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 // For Motors
@@ -183,11 +184,6 @@ class ObjectDetector {
     private VisionPortal visionPortal;
     public ObjectDetector(HardwareMap hardwareMap, String modelFile) {
 
-        initTfod(modelFile);
-
-    }
-    private void initTfod(String modelFile) {
-
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
 
@@ -220,10 +216,12 @@ class ObjectDetector {
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
+
     }
 
     public String detectLocation() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
+        String label = "";
         //telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
@@ -231,19 +229,17 @@ class ObjectDetector {
 
 
         for (Recognition recognition : currentRecognitions) {
-            /**
-             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-             telemetry.addData(""," ");
-             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-             telemetry.addData("- Position", "%.0f / %.0f", x, y);
-             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-             */
+
+                double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+                double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+//                telemetry.addData(""," ");
+//                telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+//                telemetry.addData("- Position", "%.0f / %.0f", x, y);
+//                telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
 
             if (recognition.getConfidence() >= maxConfidence) {
-                String label = recognition.getLabel();
+                label = recognition.getLabel();
             }
-
         }
 
         return label;
