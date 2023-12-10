@@ -5,12 +5,19 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 // Controller
 // For Camera
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 // For Motors
 import com.qualcomm.robotcore.hardware.DcMotor;
 // For Servos
 import com.qualcomm.robotcore.hardware.Servo;
 // For Vision
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
+//Other Java Imports
+import java.util.List;
 class Intake {
     DcMotor lower_infeed;
     DcMotor upper_infeed;
@@ -41,33 +48,49 @@ class Lift {
     DcMotor lift;
     double power;
     final int maxHeight;
+    public boolean manual;
     public Lift (HardwareMap hardwareMap) {
         // Initializing lift motor and power
         lift = hardwareMap.get(DcMotor.class, "lift");
         power = 1;
         maxHeight = 4300;
-//         Resetting Encoder of lift motor and setting it to "RUN_TO_POSITION" mode
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setTargetPosition(0);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        manual = false;
         off();
     }
     void off() {
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift.setPower(0);
     }
     void goToTop () {
+        manual = false;
         setPosition(maxHeight);
     }
     void setPosition(int encoderPosition) {
         lift.setPower(power);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setTargetPosition(encoderPosition);
     }
     boolean isAtBottom () {
-        return lift.getTargetPosition() == 0;
+        return lift.getTargetPosition() == 0 || Math.abs(lift.getCurrentPosition()) < 10 ;
     }
     void checkForZero() {
         if (lift.getTargetPosition() == 0 && Math.abs(lift.getCurrentPosition()) < 10) {
             off();
+        }
+    }
+    void slowMove (boolean up) {
+
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (lift.getCurrentPosition() < maxHeight-50 && up) {
+            lift.setPower(power);
+        } else if (lift.getCurrentPosition() > 50 && !up) {
+            lift.setPower(-power);
+        } else {
+            lift.setPower(0);
         }
     }
     int getPosition() {
@@ -98,13 +121,13 @@ class Drive {
         front_right = hardwareMap.get(DcMotor.class, "front_right");
         rear_left = hardwareMap.get(DcMotor.class, "rear_left");
         rear_right = hardwareMap.get(DcMotor.class, "rear_right");
-        front_left.setDirection(DcMotorSimple.Direction.REVERSE);
+        front_right.setDirection(DcMotorSimple.Direction.REVERSE);
         rear_right.setDirection(DcMotorSimple.Direction.REVERSE);
     }
     public void drive (double x, double y, double r) {
         double speed = 0.5; // 0-1
-        front_left.setPower((y + x + r) * speed);
-        front_right.setPower((y - x - r) * speed);
+        front_left.setPower((y - x - r) * speed);
+        front_right.setPower((y + x + r) * speed);
         rear_left.setPower((y + x - r) * speed);
         rear_right.setPower((y - x + r) * speed);
     }
@@ -113,8 +136,8 @@ class Drive {
 class FlipGrip {
     Servo flip;
     Servo grip;
-    boolean flipped;
-    boolean gripped;
+    public boolean flipped;
+    public boolean gripped;
     public FlipGrip (HardwareMap hardwareMap) {
         flip = hardwareMap.get(Servo.class, "flip");
         grip = hardwareMap.get(Servo.class, "release");
@@ -123,20 +146,18 @@ class FlipGrip {
         flipped = false;
         gripped = false;
     }
-    void flip () {
+    void flip (boolean extra) {
         if (flipped) {
-            flip.setPosition(0.54);
+            flip.setPosition(0.51);
         }
         else {
-            flip.setPosition(0.05);
+            if (extra) {
+                flip.setPosition(0.05);
+            } else {
+                flip.setPosition(0.15);
+            }
         }
         flipped = !flipped;
-    }
-    void open() {
-        flip.setPosition(0.05);
-    }
-    void close() {
-        flip.setPosition(0.54);
     }
     void grip () {
         if (gripped) {
@@ -146,5 +167,86 @@ class FlipGrip {
             grip.setPosition(0.5);
         }
         gripped = !gripped;
+    }
+    public boolean isFlipped () {
+        return flipped;
+    }
+    public boolean isGripped() {
+        return gripped;
+    }
+}
+
+class ObjectDetector {
+
+    private TfodProcessor tfod;
+
+    private VisionPortal visionPortal;
+    public ObjectDetector(HardwareMap hardwareMap, String modelFile) {
+
+        initTfod(modelFile);
+
+    }
+    private void initTfod(String modelFile) {
+
+        // Create the TensorFlow processor by using a builder.
+        tfod = new TfodProcessor.Builder()
+
+                // With the following lines commented out, the default TfodProcessor Builder
+                // will load the default model for the season. To define a custom model to load,
+                // choose one of the following:
+                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
+                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
+                //.setModelAssetName(TFOD_MODEL_ASSET)
+                .setModelFileName(modelFile)
+
+                // The following default settings are available to un-comment and edit as needed to
+                // set parameters for custom models.
+                //.setModelLabels(LABELS)
+                //.setIsModelTensorFlow2(true)
+                //.setIsModelQuantized(true)
+                //.setModelInputSize(300)
+                //.setModelAspectRatio(16.0 / 9.0)
+
+                .build();
+
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+
+        // Set the camera (webcam vs. built-in RC phone camera).
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+
+        // Set and enable the processor.
+        builder.addProcessor(tfod);
+
+        // Build the Vision Portal, using the above settings.
+        visionPortal = builder.build();
+    }
+
+    public String detectLocation() {
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        //telemetry.addData("# Objects Detected", currentRecognitions.size());
+
+        // Step through the list of recognitions and display info for each one.
+        int maxConfidence = 0;
+
+
+        for (Recognition recognition : currentRecognitions) {
+            /**
+             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+             telemetry.addData(""," ");
+             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+             telemetry.addData("- Position", "%.0f / %.0f", x, y);
+             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+             */
+
+            if (recognition.getConfidence() >= maxConfidence) {
+                String label = recognition.getLabel();
+            }
+
+        }
+
+        return label;
+        // end for() loop
     }
 }
