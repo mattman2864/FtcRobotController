@@ -41,49 +41,33 @@ class Lift {
     DcMotor lift;
     double power;
     final int maxHeight;
-    public boolean manual;
     public Lift (HardwareMap hardwareMap) {
         // Initializing lift motor and power
         lift = hardwareMap.get(DcMotor.class, "lift");
         power = 1;
         maxHeight = 4300;
+//         Resetting Encoder of lift motor and setting it to "RUN_TO_POSITION" mode
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setTargetPosition(0);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        manual = false;
         off();
     }
     void off() {
-        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift.setPower(0);
     }
     void goToTop () {
-        manual = false;
         setPosition(maxHeight);
     }
     void setPosition(int encoderPosition) {
         lift.setPower(power);
-        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setTargetPosition(encoderPosition);
     }
     boolean isAtBottom () {
-        return lift.getTargetPosition() == 0 || Math.abs(lift.getCurrentPosition()) < 10 ;
+        return lift.getTargetPosition() == 0;
     }
     void checkForZero() {
         if (lift.getTargetPosition() == 0 && Math.abs(lift.getCurrentPosition()) < 10) {
             off();
-        }
-    }
-    void slowMove (boolean up) {
-
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (lift.getCurrentPosition() < maxHeight-50 && up) {
-            lift.setPower(power);
-        } else if (lift.getCurrentPosition() > 50 && !up) {
-            lift.setPower(-power);
-        } else {
-            lift.setPower(0);
         }
     }
     int getPosition() {
@@ -114,13 +98,13 @@ class Drive {
         front_right = hardwareMap.get(DcMotor.class, "front_right");
         rear_left = hardwareMap.get(DcMotor.class, "rear_left");
         rear_right = hardwareMap.get(DcMotor.class, "rear_right");
-        front_right.setDirection(DcMotorSimple.Direction.REVERSE);
+        front_left.setDirection(DcMotorSimple.Direction.REVERSE);
         rear_right.setDirection(DcMotorSimple.Direction.REVERSE);
     }
     public void drive (double x, double y, double r) {
         double speed = 0.5; // 0-1
-        front_left.setPower((y - x - r) * speed);
-        front_right.setPower((y + x + r) * speed);
+        front_left.setPower((y + x + r) * speed);
+        front_right.setPower((y - x - r) * speed);
         rear_left.setPower((y + x - r) * speed);
         rear_right.setPower((y - x + r) * speed);
     }
@@ -129,8 +113,8 @@ class Drive {
 class FlipGrip {
     Servo flip;
     Servo grip;
-    public boolean flipped;
-    public boolean gripped;
+    boolean flipped;
+    boolean gripped;
     public FlipGrip (HardwareMap hardwareMap) {
         flip = hardwareMap.get(Servo.class, "flip");
         grip = hardwareMap.get(Servo.class, "release");
@@ -139,18 +123,20 @@ class FlipGrip {
         flipped = false;
         gripped = false;
     }
-    void flip (boolean extra) {
+    void flip () {
         if (flipped) {
-            flip.setPosition(0.51);
+            flip.setPosition(0.54);
         }
         else {
-            if (extra) {
-                flip.setPosition(0.05);
-            } else {
-                flip.setPosition(0.15);
-            }
+            flip.setPosition(0.05);
         }
         flipped = !flipped;
+    }
+    void open() {
+        flip.setPosition(0.05);
+    }
+    void close() {
+        flip.setPosition(0.54);
     }
     void grip () {
         if (gripped) {
@@ -160,11 +146,5 @@ class FlipGrip {
             grip.setPosition(0.5);
         }
         gripped = !gripped;
-    }
-    public boolean isFlipped () {
-        return flipped;
-    }
-    public boolean isGripped() {
-        return gripped;
     }
 }
