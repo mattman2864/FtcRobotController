@@ -50,10 +50,12 @@ class Lift {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setTargetPosition(0);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         manual = false;
         off();
     }
     void off() {
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift.setPower(0);
     }
     void goToTop () {
@@ -62,21 +64,26 @@ class Lift {
     }
     void setPosition(int encoderPosition) {
         lift.setPower(power);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setTargetPosition(encoderPosition);
     }
     boolean isAtBottom () {
-        return lift.getTargetPosition() == 0;
+        return lift.getTargetPosition() == 0 || Math.abs(lift.getCurrentPosition()) < 10 ;
     }
     void checkForZero() {
         if (lift.getTargetPosition() == 0 && Math.abs(lift.getCurrentPosition()) < 10) {
             off();
         }
     }
-    void slowMove (int iterate) {
-        if (lift.getCurrentPosition() < maxHeight - iterate) {
-            setPosition(lift.getCurrentPosition() + iterate);
+    void slowMove (boolean up) {
+
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if (lift.getCurrentPosition() < maxHeight-50 && up) {
+            lift.setPower(power);
+        } else if (lift.getCurrentPosition() > 50 && !up) {
+            lift.setPower(-power);
         } else {
-            setPosition(maxHeight);
+            lift.setPower(0);
         }
     }
     int getPosition() {
@@ -132,12 +139,16 @@ class FlipGrip {
         flipped = false;
         gripped = false;
     }
-    void flip () {
+    void flip (boolean extra) {
         if (flipped) {
-            flip.setPosition(0.54);
+            flip.setPosition(0.51);
         }
         else {
-            flip.setPosition(0.05);
+            if (extra) {
+                flip.setPosition(0.05);
+            } else {
+                flip.setPosition(0.15);
+            }
         }
         flipped = !flipped;
     }

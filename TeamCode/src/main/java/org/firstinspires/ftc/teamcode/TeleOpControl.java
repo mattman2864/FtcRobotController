@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class TeleOpControl {
@@ -20,52 +21,63 @@ public class TeleOpControl {
     public void drive () {
         driver.drive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
     }
-
     public void intake () {
-        if (controller.B()) {
+        if (controller.B() && lift.isAtBottom()) {
             intake.on(1);
-        } else if (controller.dpadLeft()) {
+        } else if (controller.dpadLeft() && lift.isAtBottom()) {
             intake.reverse(0.3);
         } else {
             intake.off();
         }
     }
     public void lift () {
-        lift.checkForZero();
+
         if (controller.right_trigger > 0) {
-            lift.slowMove(150);
+            lift.slowMove(true);
         }
-        if (controller.left_trigger > 0) {
-            lift.slowMove(-150);
+        else if (controller.left_trigger > 0) {
+            lift.slowMove(false);
+        }
+        else if (lift.lift.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
+            lift.setPosition(lift.getPosition());
+            lift.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         if (controller.YOnce()) {
-            if (lift.isAtBottom() || !out) {
-                lift.goToTop();
+            if (lift.isAtBottom()) {
+                lift.setPosition(3000);
                 out = true;
             }
             else {
                 if (flipgrip.isFlipped()){
-                    flipgrip.flip();
+                    flipgrip.flip(false);
+                }
+                if (flipgrip.isGripped()) {
+                    flipgrip.grip();
                 }
                 lift.setPosition(0);
                 out = false;
             }
         }
+        lift.checkForZero();
     }
     public void flipGrip () {
         if (controller.XOnce() && !lift.isAtBottom()) {
             out = false;
-            flipgrip.flip();
+            flipgrip.flip(false);
         }
         if (controller.AOnce() && !lift.isAtBottom()) {
             out = false;
             flipgrip.grip();
         }
-        if (out && lift.getPosition() > 1000 && !flipgrip.isFlipped()) {
-            flipgrip.flip();
+        if (out && !flipgrip.isFlipped() && lift.getPosition() > 2000) {
+            out = false;
+            flipgrip.flip(false);
         }
         if (lift.getPosition() < 2000 && flipgrip.isFlipped()) {
-            flipgrip.flip();
+            flipgrip.flip(false);
+        }
+        if (controller.leftBumper() && flipgrip.isFlipped()) {
+            flipgrip.flip(true);
         }
     }
 }
