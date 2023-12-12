@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 // For hardwareMap and telemetry
+import android.util.Size;
+
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 // Controller
@@ -18,6 +20,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 //Other Java Imports
+import java.util.ArrayList;
 import java.util.List;
 class Intake {
     DcMotor lower_infeed;
@@ -183,7 +186,10 @@ class ObjectDetector {
 
     private VisionPortal visionPortal;
     public ObjectDetector(HardwareMap hardwareMap, String modelFile) {
-
+        List<String> LABELS = new ArrayList<String>();
+        LABELS.add("Red center");
+        LABELS.add("Red empty");
+        LABELS.add("Red right");
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
 
@@ -197,19 +203,23 @@ class ObjectDetector {
 
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
-                //.setModelLabels(LABELS)
-                //.setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
-                //.setModelInputSize(300)
-                //.setModelAspectRatio(16.0 / 9.0)
+                .setModelLabels(LABELS)
+                .setIsModelTensorFlow2(true)
+                .setIsModelQuantized(true)
+                .setModelInputSize(3000)
+                .setModelAspectRatio(4.0/3.0)
 
                 .build();
+//        tfod = TfodProcessor.easyCreateWithDefaults();
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
         // Set the camera (webcam vs. built-in RC phone camera).
         builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        builder.setCameraResolution(new Size(640, 480));
+        builder.enableLiveView(true);
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
         // Set and enable the processor.
         builder.addProcessor(tfod);
@@ -219,30 +229,21 @@ class ObjectDetector {
 
     }
 
-    public String detectLocation() {
+    public double detectLocation() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
-        String label = "";
         //telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
-        int maxConfidence = 0;
-
+        double confidenceThreshold = 0;
+        double xFinal = 0;
 
         for (Recognition recognition : currentRecognitions) {
-
-                double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-//                telemetry.addData(""," ");
-//                telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-//                telemetry.addData("- Position", "%.0f / %.0f", x, y);
-//                telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-
-            if (recognition.getConfidence() >= maxConfidence) {
-                label = recognition.getLabel();
+            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+            if (recognition.getConfidence() > confidenceThreshold) {
+                xFinal = x;
             }
         }
-
-        return label;
-        // end for() loop
+        return xFinal;
     }
 }
