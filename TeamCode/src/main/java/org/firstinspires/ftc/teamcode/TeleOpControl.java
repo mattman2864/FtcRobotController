@@ -12,9 +12,15 @@ public class TeleOpControl {
     FlipGrip flipgrip;
     Controller controller;
     boolean out;
+<<<<<<< HEAD
     int lastEncoder = 0;
     LinkedList<Integer> previousEncoders = new LinkedList<Integer>();
     LinkedList<Integer> currentEncoders = new LinkedList<Integer>();
+=======
+    int x;
+    int y;
+    int r;
+>>>>>>> cb43194f0cfbdaa658dd4ab090fe8506dff72b3c
     public TeleOpControl (Controller controller, HardwareMap hardwareMap) {
         driver = new Drive(hardwareMap);
         intake = new Intake(hardwareMap);
@@ -24,7 +30,16 @@ public class TeleOpControl {
         boolean out = true;
     }
     public void drive () {
-        driver.drive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
+        x = controller.left_stick_x;
+        r = controller.right_stick_x;
+        if (controller.leftBumper()) {
+            y = controller.left_stick_y + 1;
+        } else if (controller.rightBumper()) {
+            y = controller.left_stick_y + 1;
+        } else {
+            y = controller.left_stick_y;
+        }
+        driver.drive(x, y, r);
     }
     public void intake () {
         if (controller.B() && lift.isAtBottom()) {
