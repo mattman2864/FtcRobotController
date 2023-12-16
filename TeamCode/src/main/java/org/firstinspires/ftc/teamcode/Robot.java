@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 // Controller
 // For Camera
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import com.qualcomm.robotcore.hardware.DcMotor;
 // For Servos
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 // For Vision
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -50,18 +52,19 @@ class Intake {
 
 class Lift {
     DcMotor lift;
+    TouchSensor liftTouch;
     double power;
     final int maxHeight;
     public boolean manual;
     public Lift (HardwareMap hardwareMap) {
         // Initializing lift motor and power
         lift = hardwareMap.get(DcMotor.class, "lift");
+        liftTouch = hardwareMap.get(TouchSensor.class, "liftTouch");
         power = 1;
         maxHeight = 4300;
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setTargetPosition(0);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         manual = false;
         off();
     }
@@ -82,12 +85,12 @@ class Lift {
         return lift.getTargetPosition() == 0 || Math.abs(lift.getCurrentPosition()) < 10 ;
     }
     void checkForZero() {
-        if (lift.getTargetPosition() == 0 && Math.abs(lift.getCurrentPosition()) < 10) {
+        if ((lift.getTargetPosition() == 0 && Math.abs(lift.getCurrentPosition()) < 10) || liftTouch.isPressed()) {
+            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             off();
         }
     }
     void slowMove (boolean up) {
-
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if (lift.getCurrentPosition() < maxHeight-50 && up) {
             lift.setPower(power);
@@ -129,7 +132,7 @@ class Drive {
         rear_right.setDirection(DcMotorSimple.Direction.REVERSE);
     }
     public void drive (double x, double y, double r) {
-        double speed = 0.5; // 0-1
+        double speed = 0.7; // 0-1
         front_left.setPower((y - x - r) * speed);
         front_right.setPower((y + x + r) * speed);
         rear_left.setPower((y + x - r) * speed);
@@ -182,68 +185,67 @@ class FlipGrip {
 
 class ObjectDetector {
 
-    private TfodProcessor tfod;
-
-    private VisionPortal visionPortal;
-    public ObjectDetector(HardwareMap hardwareMap, String modelFile) {
-        List<String> LABELS = new ArrayList<String>();
-        LABELS.add("Red center");
-        LABELS.add("Red empty");
-        LABELS.add("Red right");
-        // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
-
-                // With the following lines commented out, the default TfodProcessor Builder
-                // will load the default model for the season. To define a custom model to load,
-                // choose one of the following:
-                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
-                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_ASSET)
-                .setModelFileName(modelFile)
-
-                // The following default settings are available to un-comment and edit as needed to
-                // set parameters for custom models.
-                .setModelLabels(LABELS)
-                .setIsModelTensorFlow2(true)
-                .setIsModelQuantized(true)
-                .setModelInputSize(3000)
-                .setModelAspectRatio(4.0/3.0)
-
-                .build();
-//        tfod = TfodProcessor.easyCreateWithDefaults();
-
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-
-        // Set the camera (webcam vs. built-in RC phone camera).
-        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        builder.setCameraResolution(new Size(640, 480));
-        builder.enableLiveView(true);
-        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-        // Set and enable the processor.
-        builder.addProcessor(tfod);
-
-        // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
-
+    boolean USE_WEBCAM;
+    TfodProcessor myTfodProcessor;
+    VisionPortal myVisionPortal;
+    HardwareMap hardwareMap;
+    String modelName;
+    public ObjectDetector (HardwareMap map, String name) {
+        this.hardwareMap = map;
+        modelName = name;
     }
+    public void initTfod() {
+        USE_WEBCAM = true;
+        TfodProcessor.Builder myTfodProcessorBuilder;
+        VisionPortal.Builder myVisionPortalBuilder;
 
-    public double detectLocation() {
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
-        //telemetry.addData("# Objects Detected", currentRecognitions.size());
+        // First, create a TfodProcessor.Builder.
+        myTfodProcessorBuilder = new TfodProcessor.Builder();
+        // Set the name of the file where the model can be found.
+        myTfodProcessorBuilder.setModelFileName(modelName);
+        // Set the full ordered list of labels the model is trained to recognize.
+        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedTP", "Object"));
+        // Set the aspect ratio for the images used when the model was created.
+        myTfodProcessorBuilder.setModelAspectRatio(16 / 9);
+        // Create a TfodProcessor by calling build.
+        myTfodProcessor = myTfodProcessorBuilder.build();
+        // Next, create a VisionPortal.Builder and set attributes related to the camera.
+        myVisionPortalBuilder = new VisionPortal.Builder();
+        if (USE_WEBCAM) {
+            // Use a webcam.
+            myVisionPortalBuilder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        }
+        // Add myTfodProcessor to the VisionPortal.Builder.
+        myVisionPortalBuilder.addProcessor(myTfodProcessor);
+        // Create a VisionPortal by calling build.
+        myVisionPortal = myVisionPortalBuilder.build();
+    }
+    public int get_position() {
+        List<Recognition> myTfodRecognitions;
+        Recognition myTfodRecognition;
+        float x;
+        float y;
 
-        // Step through the list of recognitions and display info for each one.
-        double confidenceThreshold = 0;
-        double xFinal = 0;
-
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-            if (recognition.getConfidence() > confidenceThreshold) {
+        // Get a list of recognitions from TFOD.
+        myTfodRecognitions = myTfodProcessor.getRecognitions();
+        // Iterate through list and call a function to display info for each recognized object.
+        float xFinal = 0;
+        float confidenceThreshold = 0.6f;
+        for (Recognition myTfodRecognition_item : myTfodRecognitions) {
+            myTfodRecognition = myTfodRecognition_item;
+            // Display position.
+            x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
+            y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
+            if (myTfodRecognition_item.getConfidence() > confidenceThreshold) {
                 xFinal = x;
             }
         }
-        return xFinal;
+        if (xFinal > 300) {
+            return 2;
+        } else if (myTfodRecognitions.size() > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

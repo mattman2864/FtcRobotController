@@ -23,6 +23,8 @@ public class RedRight extends LinearOpMode {
 
 
         // Initialize stuff
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
+        objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         FlipGrip flipgrip = new FlipGrip(hardwareMap);
@@ -31,9 +33,10 @@ public class RedRight extends LinearOpMode {
         Lift lift = new Lift(hardwareMap);
 
 
+
         // move for camera visualization
         Trajectory cameraLineup = drive.trajectoryBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(0, 4, 0))
+                .lineToLinearHeading(new Pose2d(6, 4, 0))
                 .build();
 
         // Line up to left line
@@ -46,7 +49,7 @@ public class RedRight extends LinearOpMode {
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
                 .lineToLinearHeading(new Pose2d(15, 1, 0))
                 .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(28, -34.2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(39, -34.2, Math.toRadians(-90)))
                 .build();
 
         // Line up to center line
@@ -59,7 +62,7 @@ public class RedRight extends LinearOpMode {
         TrajectorySequence centerToBoard = drive.trajectorySequenceBuilder(toCenterLine.end())
                 .lineToLinearHeading(new Pose2d(15, 1, 0))
                 .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(28, -34.2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(30, -34.2, Math.toRadians(-90)))
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
@@ -69,7 +72,7 @@ public class RedRight extends LinearOpMode {
         TrajectorySequence rightToBoard = drive.trajectorySequenceBuilder(toRightLine.end())
                 .lineToLinearHeading(new Pose2d(4, 1, 0))
                 .splineToLinearHeading(new Pose2d(4, -25, Math.toRadians(-90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(28, -34.2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(24, -34.2, Math.toRadians(-90)))
                 .build();
 
 
@@ -82,7 +85,8 @@ public class RedRight extends LinearOpMode {
 
 
 
-        // Wait for start
+        sleep(10000);
+
         telemetry.addLine("Initialized!");
         telemetry.update();
         waitForStart();
@@ -91,30 +95,32 @@ public class RedRight extends LinearOpMode {
 
         // Do stuff
         drive.followTrajectory(cameraLineup);
+        sleep(1000);
         //TODO: Camera detects which side
-        int side = 2;
+        int side = objectDetector.get_position();
+//        objectDetector.enable(false);
         switch (side) {
             case 0:
                 // Left
                 drive.followTrajectorySequence(toLeftLine);
-                intake.reverse(0.3);
-                sleep(1000);
+                intake.reverse(0.6);
+                sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(leftToBoard);
                 break;
             case 1:
                 // Middle
                 drive.followTrajectorySequence(toCenterLine);
-                intake.reverse(0.3);
-                sleep(1000);
+                intake.reverse(0.6);
+                sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(centerToBoard);
                 break;
             case 2:
                 // Right
                 drive.followTrajectorySequence(toRightLine);
-                intake.reverse(0.3);
-                sleep(1000);
+                intake.reverse(0.6);
+                sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(rightToBoard);
                 break;
@@ -138,9 +144,5 @@ public class RedRight extends LinearOpMode {
         sleep(1500);
         lift.checkForZero();
         drive.followTrajectorySequence(park);
-
-
-
-
     }
 }

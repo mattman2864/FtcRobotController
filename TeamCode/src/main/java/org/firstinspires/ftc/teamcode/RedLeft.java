@@ -26,6 +26,7 @@ public class RedLeft extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         // TODO: add launcher
         Lift lift = new Lift(hardwareMap);
+//        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
 
 
         // move for camera visualization
@@ -86,7 +87,6 @@ public class RedLeft extends LinearOpMode {
 
         // Do stuff
         drive.followTrajectory(cameraLineup);
-        //TODO: Camera detects which side
         int side = 2;
         switch (side) {
             case 0:

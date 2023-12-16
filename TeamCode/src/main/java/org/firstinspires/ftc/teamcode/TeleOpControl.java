@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.LinkedList;
+
 public class TeleOpControl {
     Drive driver;
     Intake intake;
@@ -10,6 +12,9 @@ public class TeleOpControl {
     FlipGrip flipgrip;
     Controller controller;
     boolean out;
+    int lastEncoder = 0;
+    LinkedList<Integer> previousEncoders = new LinkedList<Integer>();
+    LinkedList<Integer> currentEncoders = new LinkedList<Integer>();
     public TeleOpControl (Controller controller, HardwareMap hardwareMap) {
         driver = new Drive(hardwareMap);
         intake = new Intake(hardwareMap);

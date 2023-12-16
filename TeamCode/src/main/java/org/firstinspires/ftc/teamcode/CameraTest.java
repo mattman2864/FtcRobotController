@@ -1,28 +1,32 @@
 package org.firstinspires.ftc.teamcode;
 
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.teamcode.RRDrive.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.RRDrive.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.RRDrive.drive.opmode.StrafeTest;
-import org.firstinspires.ftc.teamcode.RRDrive.trajectorysequence.TrajectorySequence;
-
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
-@Autonomous(name = "Camera-Test", preselectTeleOp = "MainTeleOp")
+@TeleOp(name = "CameraTest (Blocks to Java)")
 public class CameraTest extends LinearOpMode {
+
+    boolean USE_WEBCAM;
+    TfodProcessor myTfodProcessor;
+    VisionPortal myVisionPortal;
+
+    /**
+     * This function is executed when this OpMode is selected from the Driver Station.
+     */
+    @Override
     public void runOpMode() {
-        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedTest.tflite");
-        telemetry.update();
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
+        objectDetector.initTfod();
         waitForStart();
         while (opModeIsActive()) {
-            telemetry.addData("x Position", objectDetector.detectLocation());
+            telemetry.addData("x pos", objectDetector.get_position());
             telemetry.update();
         }
     }

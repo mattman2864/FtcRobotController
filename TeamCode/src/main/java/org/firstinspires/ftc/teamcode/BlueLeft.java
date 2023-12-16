@@ -22,6 +22,8 @@ public class BlueLeft extends LinearOpMode {
 
 
         // Initialize stuff
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "BlueModel.tflite");
+        objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         FlipGrip flipgrip = new FlipGrip(hardwareMap);
@@ -44,7 +46,7 @@ public class BlueLeft extends LinearOpMode {
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
                 .lineToLinearHeading(new Pose2d(4, 1, 0))
                 .splineToLinearHeading(new Pose2d(4, 25, Math.toRadians(90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(32, 34.2, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(23, 34.2, Math.toRadians(90)))
                 .build();
 
         // Line up to center line
@@ -57,7 +59,7 @@ public class BlueLeft extends LinearOpMode {
         TrajectorySequence centerToBoard = drive.trajectorySequenceBuilder(toCenterLine.end())
                 .lineToLinearHeading(new Pose2d(15, -1, 0))
                 .splineToLinearHeading(new Pose2d(20, 25, Math.toRadians(90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(28, 34.2, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(26, 34.2, Math.toRadians(90)))
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
@@ -68,7 +70,7 @@ public class BlueLeft extends LinearOpMode {
         TrajectorySequence rightToBoard = drive.trajectorySequenceBuilder(toRightLine.end())
                 .lineToLinearHeading(new Pose2d(15, -1, 0))
                 .splineToLinearHeading(new Pose2d(20, 25, Math.toRadians(90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(28, 34.2, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(33, 34.2, Math.toRadians(90)))
                 .build();
 
         //park after placing pixel
@@ -87,14 +89,15 @@ public class BlueLeft extends LinearOpMode {
 
         // Do stuff
         drive.followTrajectory(cameraLineup);
+        sleep(1000);
         //TODO: Camera detects which side
-        int side = 2;
+        int side = objectDetector.get_position();
         switch (side) {
             case 0:
                 // Left
                 drive.followTrajectorySequence(toLeftLine);
                 intake.reverse(0.3);
-                sleep(1000);
+                sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(leftToBoard);
                 break;
@@ -102,7 +105,7 @@ public class BlueLeft extends LinearOpMode {
                 // Middle
                 drive.followTrajectorySequence(toCenterLine);
                 intake.reverse(0.3);
-                sleep(1000);
+                sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(centerToBoard);
                 break;
@@ -110,7 +113,7 @@ public class BlueLeft extends LinearOpMode {
                 // Right
                 drive.followTrajectorySequence(toRightLine);
                 intake.reverse(0.3);
-                sleep(1000);
+                sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(rightToBoard);
                 break;
