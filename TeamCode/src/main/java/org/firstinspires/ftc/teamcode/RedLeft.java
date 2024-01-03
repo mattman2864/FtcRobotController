@@ -20,11 +20,12 @@ public class RedLeft extends LinearOpMode {
 
 
         // Initialize stuff
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
+        objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         FlipGrip flipgrip = new FlipGrip(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        // TODO: add launcher
         Lift lift = new Lift(hardwareMap);
 //        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
 
@@ -87,7 +88,7 @@ public class RedLeft extends LinearOpMode {
 
         // Do stuff
         drive.followTrajectory(cameraLineup);
-        int side = 2;
+        int side = objectDetector.get_position();
         switch (side) {
             case 0:
                 // Left

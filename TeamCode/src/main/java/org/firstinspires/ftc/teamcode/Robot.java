@@ -106,15 +106,13 @@ class Lift {
 }
 
 class Launcher {
-    DcMotor launch;
+    Servo launch;
     public Launcher (HardwareMap hardwareMap) {
-        launch = hardwareMap.get(DcMotor.class, "launch");
+        launch = hardwareMap.get(Servo.class, "launcher");
+        launch.setPosition(.17);
     }
-    public void shoot (double speed) {
-        launch.setPower(speed);
-    }
-    public void off (double speed) {
-        launch.setPower(0);
+    public void shoot () {
+        launch.setPosition(.3);
     }
 }
 
@@ -148,20 +146,20 @@ class FlipGrip {
     public FlipGrip (HardwareMap hardwareMap) {
         flip = hardwareMap.get(Servo.class, "flip");
         grip = hardwareMap.get(Servo.class, "release");
-        flip.setPosition(0.6);
+        flip.setPosition(0.59);
         grip.setPosition(0);
         flipped = false;
         gripped = false;
     }
     void flip (boolean extra) {
         if (flipped) {
-            flip.setPosition(0.51);
+            flip.setPosition(0.59);
         }
         else {
             if (extra) {
-                flip.setPosition(0.05);
-            } else {
                 flip.setPosition(0.15);
+            } else {
+                flip.setPosition(0.25);
             }
         }
         flipped = !flipped;

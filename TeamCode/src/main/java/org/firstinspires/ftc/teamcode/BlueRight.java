@@ -19,11 +19,12 @@ public class BlueRight extends LinearOpMode {
 
 
         // Initialize stuff
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "BlueModel.tflite");
+        objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         FlipGrip flipgrip = new FlipGrip(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        // TODO: add launcher
         Lift lift = new Lift(hardwareMap);
 
 
@@ -42,7 +43,7 @@ public class BlueRight extends LinearOpMode {
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
                 .lineToConstantHeading(new Vector2d(51, -8))
                 .lineToConstantHeading(new Vector2d(51, 70))
-                .lineToConstantHeading(new Vector2d(23.5, 88))
+                .lineToConstantHeading(new Vector2d(23.5, 87.5))
                 .build();
 
         // Line up to center line
@@ -55,7 +56,7 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(20, -16, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(52, -16, Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(51, 60))
-                .lineToConstantHeading(new Vector2d(32, 88))
+                .lineToConstantHeading(new Vector2d(28, 87.5))
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
@@ -66,7 +67,7 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(20, -21, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(52, -21, Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(51, 60))
-                .lineToConstantHeading(new Vector2d(35, 88))
+                .lineToConstantHeading(new Vector2d(35, 87.5))
                 .build();
 
         //park after placing pixel
@@ -85,8 +86,7 @@ public class BlueRight extends LinearOpMode {
 
         // Do stuff
         drive.followTrajectory(cameraLineup);
-        //TODO: Camera detects which side
-        int side = 2;
+        int side = objectDetector.get_position();
         switch (side) {
             case 0:
                 // Left

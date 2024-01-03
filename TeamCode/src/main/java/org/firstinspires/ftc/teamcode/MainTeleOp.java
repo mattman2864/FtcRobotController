@@ -23,6 +23,7 @@ public class MainTeleOp extends LinearOpMode {
                 control.intake();
                 control.lift();
                 control.flipGrip();
+                control.launch();
                 telemetry.addData("lift position", control.lift.getPosition());
                 telemetry.addData("lift power", control.lift.lift.getPower());
                 telemetry.update();

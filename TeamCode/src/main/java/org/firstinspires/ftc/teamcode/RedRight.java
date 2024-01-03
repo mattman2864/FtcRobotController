@@ -29,14 +29,13 @@ public class RedRight extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         FlipGrip flipgrip = new FlipGrip(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        // TODO: add launcher
         Lift lift = new Lift(hardwareMap);
 
 
 
         // move for camera visualization
         Trajectory cameraLineup = drive.trajectoryBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(6, 4, 0))
+                .lineToLinearHeading(new Pose2d(0, 4, 0))
                 .build();
 
         // Line up to left line
@@ -49,30 +48,30 @@ public class RedRight extends LinearOpMode {
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
                 .lineToLinearHeading(new Pose2d(15, 1, 0))
                 .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(39, -34.2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(39, -35.7, Math.toRadians(-90)))
                 .build();
 
         // Line up to center line
         TrajectorySequence toCenterLine = drive.trajectorySequenceBuilder(cameraLineup.end())
                 .lineToLinearHeading(new Pose2d(32, 4, 0))
-                .lineToLinearHeading(new Pose2d(27.2, 1, 0))
+                .lineToLinearHeading(new Pose2d(28.5, 1, 0))
                 .build();
 
         // from center line to board
         TrajectorySequence centerToBoard = drive.trajectorySequenceBuilder(toCenterLine.end())
                 .lineToLinearHeading(new Pose2d(15, 1, 0))
                 .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(30, -34.2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(30, -35.7, Math.toRadians(-90)))
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(29, 7, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(29, 9.5, Math.toRadians(-90)))
                 .build();
 
         TrajectorySequence rightToBoard = drive.trajectorySequenceBuilder(toRightLine.end())
                 .lineToLinearHeading(new Pose2d(4, 1, 0))
                 .splineToLinearHeading(new Pose2d(4, -25, Math.toRadians(-90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(24, -34.2, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(24, -35.7, Math.toRadians(-90)))
                 .build();
 
 
@@ -96,14 +95,13 @@ public class RedRight extends LinearOpMode {
         // Do stuff
         drive.followTrajectory(cameraLineup);
         sleep(1000);
-        //TODO: Camera detects which side
         int side = objectDetector.get_position();
 //        objectDetector.enable(false);
         switch (side) {
             case 0:
                 // Left
                 drive.followTrajectorySequence(toLeftLine);
-                intake.reverse(0.6);
+                intake.reverse(0.3);
                 sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(leftToBoard);
@@ -111,7 +109,7 @@ public class RedRight extends LinearOpMode {
             case 1:
                 // Middle
                 drive.followTrajectorySequence(toCenterLine);
-                intake.reverse(0.6);
+                intake.reverse(0.3);
                 sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(centerToBoard);
@@ -119,7 +117,7 @@ public class RedRight extends LinearOpMode {
             case 2:
                 // Right
                 drive.followTrajectorySequence(toRightLine);
-                intake.reverse(0.6);
+                intake.reverse(0.3);
                 sleep(1500);
                 intake.off();
                 drive.followTrajectorySequence(rightToBoard);

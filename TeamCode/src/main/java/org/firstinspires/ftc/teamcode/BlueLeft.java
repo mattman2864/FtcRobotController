@@ -28,7 +28,6 @@ public class BlueLeft extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         FlipGrip flipgrip = new FlipGrip(hardwareMap);
         Intake intake = new Intake(hardwareMap);
-        // TODO: add launcher
         Lift lift = new Lift(hardwareMap);
 
 
@@ -90,7 +89,6 @@ public class BlueLeft extends LinearOpMode {
         // Do stuff
         drive.followTrajectory(cameraLineup);
         sleep(1000);
-        //TODO: Camera detects which side
         int side = objectDetector.get_position();
         switch (side) {
             case 0:
