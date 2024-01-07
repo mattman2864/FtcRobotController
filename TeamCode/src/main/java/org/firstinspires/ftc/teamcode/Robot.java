@@ -85,7 +85,7 @@ class Lift {
         return lift.getTargetPosition() == 0 || Math.abs(lift.getCurrentPosition()) < 10 ;
     }
     void checkForZero() {
-        if ((lift.getTargetPosition() == 0 && Math.abs(lift.getCurrentPosition()) < 10) || liftTouch.isPressed()) {
+        if (lift.getTargetPosition() == 0 && (Math.abs(lift.getCurrentPosition()) < 10 || liftTouch.isPressed())) {
             lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             off();
         }
@@ -159,7 +159,7 @@ class FlipGrip {
             if (extra) {
                 flip.setPosition(0.15);
             } else {
-                flip.setPosition(0.25);
+                flip.setPosition(0.22);
             }
         }
         flipped = !flipped;

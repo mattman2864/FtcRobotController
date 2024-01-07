@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.LinkedList;
 
@@ -30,7 +31,7 @@ public class TeleOpControl {
     }
     public void intake () {
         if (controller.B() && lift.isAtBottom()) {
-            intake.on(1);
+            intake.on(0.8);
         } else if (controller.dpadLeft() && lift.isAtBottom()) {
             intake.reverse(0.3);
         } else {
@@ -67,13 +68,17 @@ public class TeleOpControl {
         }
         lift.checkForZero();
     }
-    public void flipGrip () {
+    public void flipGrip (ElapsedTime time) {
         if (controller.XOnce() && !lift.isAtBottom()) {
             out = false;
             flipgrip.flip(false);
         }
         if (controller.AOnce() && !lift.isAtBottom()) {
             out = false;
+            flipgrip.grip();
+            time.reset();
+        }
+        if (time.milliseconds() > 200 && flipgrip.isGripped()) {
             flipgrip.grip();
         }
         if (out && !flipgrip.isFlipped() && lift.getPosition() > 2000) {
