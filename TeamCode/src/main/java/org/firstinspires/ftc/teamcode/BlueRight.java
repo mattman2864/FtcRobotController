@@ -23,7 +23,7 @@ public class BlueRight extends LinearOpMode {
         objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        FlipGrip flipgrip = new FlipGrip(hardwareMap);
+//        FlipGrip flipgrip = new FlipGrip(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
 
@@ -116,21 +116,21 @@ public class BlueRight extends LinearOpMode {
         }
         lift.setPosition(1180);
         sleep(700);
-        flipgrip.flip(true);
+//        flipgrip.flip(true);
         sleep(1000);
         lift.setPosition(950);
         sleep(500);
-        flipgrip.grip();
+//        flipgrip.grip();
         sleep(1000);
-        flipgrip.grip();
+//        flipgrip.grip();
         sleep(100);
         lift.setPosition(2000);
         sleep(300);
-        flipgrip.flip(false);
+//        flipgrip.flip(false);
         sleep(1000);
         lift.setPosition(0);
         sleep(1500);
-        lift.checkForZero();
+//        lift.checkForZero();
         drive.followTrajectorySequence(park);
     }
 }

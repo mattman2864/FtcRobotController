@@ -10,7 +10,6 @@ public class TeleOpControl {
     Drive driver;
     Intake intake;
     Lift lift;
-    FlipGrip flipgrip;
     Controller controller;
     Launcher launcher;
     boolean out;
@@ -21,7 +20,6 @@ public class TeleOpControl {
         driver = new Drive(hardwareMap);
         intake = new Intake(hardwareMap);
         lift = new Lift(hardwareMap);
-        flipgrip = new FlipGrip(hardwareMap);
         launcher = new Launcher(hardwareMap);
         this.controller = controller;
         boolean out = true;
@@ -29,67 +27,39 @@ public class TeleOpControl {
     public void drive () {
         driver.drive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
     }
-    public void intake () {
-        if (controller.B() && lift.isAtBottom()) {
-            intake.on(0.8);
-        } else if (controller.dpadLeft() && lift.isAtBottom()) {
+    public void intake (ElapsedTime time) {
+        if (controller.B() && !lift.isUp()) {
+            intake.on(0.75);
+        } else if (controller.dpadLeft() && !lift.isUp()) {
             intake.reverse(0.3);
         } else {
             intake.off();
         }
     }
-    public void lift () {
-
-        if (controller.right_trigger > 0) {
-            lift.slowMove(true);
-        }
-        else if (controller.left_trigger > 0) {
-            lift.slowMove(false);
-        }
-        else if (lift.lift.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
-            lift.setPosition(lift.getPosition());
-            lift.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
+    public void lift (ElapsedTime time) {
+        lift.update(time);
         if (controller.YOnce()) {
-            if (lift.isAtBottom()) {
-                lift.setPosition(3000);
-                out = true;
-            }
-            else {
-                if (flipgrip.isFlipped()){
-                    flipgrip.flip(false);
-                }
-                if (flipgrip.isGripped()) {
-                    flipgrip.grip();
-                }
-                lift.setPosition(0);
-                out = false;
+            if (lift.isUp()) {
+                lift.down();
+            } else {
+                lift.place();
             }
         }
-        lift.checkForZero();
-    }
-    public void flipGrip (ElapsedTime time) {
-        if (controller.XOnce() && !lift.isAtBottom()) {
-            out = false;
-            flipgrip.flip(false);
+        if (controller.dpadUpOnce()) {
+            lift.prePosUp();
         }
-        if (controller.AOnce() && !lift.isAtBottom()) {
-            out = false;
-            flipgrip.grip();
-            time.reset();
+        if (controller.dpadDownOnce()) {
+            lift.prePosDown();
         }
-        if (time.milliseconds() > 200 && flipgrip.isGripped()) {
-            flipgrip.grip();
+        if (controller.A() && lift.isUp()) {
+            lift.drop();
         }
-        if (out && !flipgrip.isFlipped() && lift.getPosition() > 2000) {
-            out = false;
-            flipgrip.flip(false);
-        }
-        if (lift.getPosition() < 2000 && flipgrip.isFlipped()) {
-            flipgrip.flip(false);
-        }
-        if (controller.leftBumper() && flipgrip.isFlipped()) {
-            flipgrip.flip(true);
+        if (controller.right_trigger > 0) {
+            lift.manualUp();
+        } else if (controller.left_trigger > 0) {
+            lift.manualDown();
+        } else if (lift.isManual()) {
+            lift.manualHold();
         }
     }
     public void launch () {

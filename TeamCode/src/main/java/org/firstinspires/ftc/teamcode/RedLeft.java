@@ -24,7 +24,7 @@ public class RedLeft extends LinearOpMode {
         objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        FlipGrip flipgrip = new FlipGrip(hardwareMap);
+//        FlipGrip flipgrip = new FlipGrip(hardwareMap);
         Intake intake = new Intake(hardwareMap);
         Lift lift = new Lift(hardwareMap);
 //        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
@@ -37,15 +37,15 @@ public class RedLeft extends LinearOpMode {
 
         // Line up to left line
         TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(20, 7, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(20, 8, Math.toRadians(0)))
                 .build();
 
         // from left line to board
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
-                .lineToLinearHeading(new Pose2d(20, 21, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(52, 21, Math.toRadians(-90)))
-                .lineToConstantHeading(new Vector2d(51, -60))
-                .lineToConstantHeading(new Vector2d(38, -87))
+                .lineToLinearHeading(new Pose2d(15, -5, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(51, -5, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(51, -60, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(32, -93))
                 .build();
 
         // Line up to center line
@@ -88,29 +88,35 @@ public class RedLeft extends LinearOpMode {
 
         // Do stuff
         drive.followTrajectory(cameraLineup);
-        int side = objectDetector.get_position();
+        sleep(1000);
+        int side = 2;//objectDetector.get_position();
+        telemetry.addData("side", side);
+        telemetry.update();
+        double intakeSpeed = 0.3;
+        int intakeTimeMS = 2000;
+//        objectDetector.enable(false);
         switch (side) {
             case 0:
                 // Left
                 drive.followTrajectorySequence(toLeftLine);
-                intake.reverse(0.3);
-                sleep(1000);
+                intake.reverse(intakeSpeed);
+                sleep(intakeTimeMS);
                 intake.off();
                 drive.followTrajectorySequence(leftToBoard);
                 break;
             case 1:
                 // Middle
                 drive.followTrajectorySequence(toCenterLine);
-                intake.reverse(0.3);
-                sleep(1000);
+                intake.reverse(intakeSpeed);
+                sleep(intakeTimeMS);
                 intake.off();
                 drive.followTrajectorySequence(centerToBoard);
                 break;
             case 2:
                 // Right
                 drive.followTrajectorySequence(toRightLine);
-                intake.reverse(0.3);
-                sleep(1000);
+                intake.reverse(intakeSpeed);
+                sleep(intakeTimeMS);
                 intake.off();
                 drive.followTrajectorySequence(rightToBoard);
                 break;
@@ -118,21 +124,20 @@ public class RedLeft extends LinearOpMode {
         }
         lift.setPosition(1180);
         sleep(700);
-        flipgrip.flip(true);
+//        flipgrip.flip(true);
+        lift.open();
         sleep(1000);
-        lift.setPosition(850);
+        lift.setPosition(1000);
         sleep(500);
-        flipgrip.grip();
+//        flipgrip.grip();
+        lift.drop();
+        sleep(200);
+        lift.setPosition(2200);
+        sleep(500);
+        lift.open();
         sleep(1000);
-        flipgrip.grip();
-        sleep(100);
-        lift.setPosition(2000);
-        sleep(300);
-        flipgrip.flip(false);
-        sleep(1000);
-        lift.setPosition(0);
+        lift.down();
         sleep(1500);
-        lift.checkForZero();
         drive.followTrajectorySequence(park);
 
 
