@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode;
-
 // For hardwareMap and telemetry
-import android.util.Size;
-
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-// Controller
 // For Camera
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 // For Motors
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,24 +13,24 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 // For Vision
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 //Other Java Imports
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-
 class Intake {
     DcMotor lower_infeed;
     DcMotor upper_infeed;
+    DistanceSensor dist;
     public Intake(HardwareMap hardwareMap) {
         // Assigning motors
         lower_infeed = hardwareMap.get(DcMotor.class, "lower_infeed");
         upper_infeed = hardwareMap.get(DcMotor.class, "upper_infeed");
         lower_infeed.setDirection(DcMotorSimple.Direction.REVERSE);
+        dist = hardwareMap.get(DistanceSensor.class, "dist");
     }
 
     public void on(double speed) {
@@ -51,6 +46,9 @@ class Intake {
     public void off() {
         lower_infeed.setPower(0);
         upper_infeed.setPower(0);
+    }
+    public boolean isFull () {
+        return dist.getDistance(DistanceUnit.MM) < 45;
     }
 }
 class Lift {
@@ -145,6 +143,9 @@ class Lift {
         prePos = 1;
     }
     public void down () {
+        if (lift.getCurrentPosition() < 2000) {
+            return;
+        }
         holdState = "inhold";
         setPosition(0);
         liftState = "moving";
@@ -183,8 +184,14 @@ class Lift {
         lift.setPower(1);
 
     }
-
     public void prePosUp () {
+        if (!(Objects.equals(liftState, "moving") || Objects.equals(liftState, "position"))) {
+            if (lift.getCurrentPosition() > 3200) {
+                prePos = 2;
+            } else {
+                prePos = 1;
+            }
+        }
         switch (prePos) {
             case 1:
                 prePos = 2;
@@ -197,6 +204,13 @@ class Lift {
         }
     }
     public void prePosDown () {
+        if (Objects.equals(liftState, "manual")) {
+            if (lift.getCurrentPosition() < 3200) {
+                prePos = 3;
+            } else {
+                prePos = 2;
+            }
+        }
         switch (prePos) {
             case 3:
                 prePos = 2;
@@ -208,63 +222,10 @@ class Lift {
                 break;
         }
     }
+    public boolean isOut () {
+        return Objects.equals(holdState, "outhold") || Objects.equals(holdState, "outdrop");
+    }
 }
-
-//class Lift {
-//    DcMotor lift;
-//    TouchSensor liftTouch;
-//    double power;
-//    final int maxHeight;
-//    public boolean manual;
-//    public Lift (HardwareMap hardwareMap) {
-//        // Initializing lift motor and power
-//        lift = hardwareMap.get(DcMotor.class, "lift");
-//        liftTouch = hardwareMap.get(TouchSensor.class, "liftTouch");
-//        power = 1;
-//        maxHeight = 4300;
-//        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        lift.setTargetPosition(0);
-//        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        manual = false;
-//        off();
-//    }
-//    void off() {
-//        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        lift.setPower(0);
-//    }
-//    void goToTop () {
-//        manual = false;
-//        setPosition(maxHeight);
-//    }
-//    void setPosition(int encoderPosition) {
-//        lift.setPower(power);
-//        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        lift.setTargetPosition(encoderPosition);
-//    }
-//    boolean isAtBottom () {
-//        return lift.getTargetPosition() == 0 || Math.abs(lift.getCurrentPosition()) < 10 ;
-//    }
-//    void checkForZero() {
-//        if (lift.getTargetPosition() == 0 && (Math.abs(lift.getCurrentPosition()) < 10 || liftTouch.isPressed())) {
-//            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            off();
-//        }
-//    }
-//    void slowMove (boolean up) {
-//        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        if (lift.getCurrentPosition() < maxHeight-50 && up) {
-//            lift.setPower(power);
-//        } else if (lift.getCurrentPosition() > 50 && !up) {
-//            lift.setPower(-power);
-//        } else {
-//            lift.setPower(0);
-//        }
-//    }
-//    int getPosition() {
-//        return lift.getCurrentPosition();
-//    }
-//}
-
 class Launcher {
     Servo launch;
     public Launcher (HardwareMap hardwareMap) {
@@ -275,7 +236,6 @@ class Launcher {
         launch.setPosition(.3);
     }
 }
-
 class Drive {
     DcMotor front_left;
     DcMotor front_right;
@@ -297,50 +257,6 @@ class Drive {
         rear_right.setPower((y - x + r) * speed);
     }
 }
-
-//class FlipGrip {
-//    Servo flip;
-//    Servo grip;
-//    public boolean flipped;
-//    public boolean gripped;
-//    public FlipGrip (HardwareMap hardwareMap) {
-//        flip = hardwareMap.get(Servo.class, "flip");
-//        grip = hardwareMap.get(Servo.class, "release");
-//        flip.setPosition(0.59);
-//        grip.setPosition(0);
-//        flipped = false;
-//        gripped = false;
-//    }
-//    void flip (boolean extra) {
-//        if (flipped) {
-//            flip.setPosition(0.59);
-//        }
-//        else {
-//            if (extra) {
-//                flip.setPosition(0.15);
-//            } else {
-//                flip.setPosition(0.22);
-//            }
-//        }
-//        flipped = !flipped;
-//    }
-//    void grip () {
-//        if (gripped) {
-//            grip.setPosition(0);
-//        }
-//        else {
-//            grip.setPosition(0.5);
-//        }
-//        gripped = !gripped;
-//    }
-//    public boolean isFlipped () {
-//        return flipped;
-//    }
-//    public boolean isGripped() {
-//        return gripped;
-//    }
-//}
-
 class ObjectDetector {
 
     boolean USE_WEBCAM;

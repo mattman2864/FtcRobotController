@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.message.redux.ReceiveGamepadState;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -27,13 +29,16 @@ public class TeleOpControl {
     public void drive () {
         driver.drive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
     }
-    public void intake (ElapsedTime time) {
+    public void intake (ElapsedTime time, Gamepad gamepad) {
         if (controller.B() && !lift.isUp()) {
             intake.on(0.75);
         } else if (controller.dpadLeft() && !lift.isUp()) {
             intake.reverse(0.3);
         } else {
             intake.off();
+        }
+        if (intake.isFull()) {
+            gamepad.rumble(0.2, 0.2,300);
         }
     }
     public void lift (ElapsedTime time) {
@@ -46,10 +51,18 @@ public class TeleOpControl {
             }
         }
         if (controller.dpadUpOnce()) {
-            lift.prePosUp();
+            if (!lift.isUp()) {
+                lift.place();
+            } else {
+                lift.prePosUp();
+            }
         }
         if (controller.dpadDownOnce()) {
-            lift.prePosDown();
+            if (lift.prePos == 1) {
+                lift.down();
+            } else {
+                lift.prePosDown();
+            }
         }
         if (controller.A() && lift.isUp()) {
             lift.drop();
@@ -60,6 +73,13 @@ public class TeleOpControl {
             lift.manualDown();
         } else if (lift.isManual()) {
             lift.manualHold();
+        }
+        if (controller.XOnce()) {
+            if (lift.isOut()) {
+                lift.close();
+            } else {
+                lift.open();
+            }
         }
     }
     public void launch () {

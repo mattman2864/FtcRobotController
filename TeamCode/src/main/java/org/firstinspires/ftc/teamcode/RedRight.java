@@ -7,6 +7,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Intake;
+import org.firstinspires.ftc.teamcode.Lift;
+import org.firstinspires.ftc.teamcode.ObjectDetector;
 import org.firstinspires.ftc.teamcode.RRDrive.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RRDrive.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RRDrive.drive.opmode.StrafeTest;

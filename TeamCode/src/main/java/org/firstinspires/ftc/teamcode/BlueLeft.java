@@ -7,6 +7,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Intake;
+import org.firstinspires.ftc.teamcode.Lift;
+import org.firstinspires.ftc.teamcode.ObjectDetector;
 import org.firstinspires.ftc.teamcode.RRDrive.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RRDrive.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RRDrive.drive.opmode.StrafeTest;
@@ -89,7 +92,7 @@ public class BlueLeft extends LinearOpMode {
         // Do stuff
         drive.followTrajectory(cameraLineup);
         sleep(1000);
-        int side = 2;//objectDetector.get_position();
+        int side = objectDetector.get_position();
         telemetry.addData("side", side);
         telemetry.update();
         double intakeSpeed = 0.3;

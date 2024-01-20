@@ -23,7 +23,7 @@ public class MainTeleOp extends LinearOpMode {
             while (opModeIsActive()) {
                 controller.update();
                 control.drive();
-                control.intake(time);
+                control.intake(time, gamepad1);
                 control.lift(time);
                 control.launch();
                 telemetry.addData("lift state", control.lift.liftState);
