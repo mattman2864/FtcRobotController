@@ -15,6 +15,7 @@ public class TeleOpControl {
     Controller controller;
     Launcher launcher;
     boolean out;
+    boolean start = true;
     int lastEncoder = 0;
     LinkedList<Integer> previousEncoders = new LinkedList<Integer>();
     LinkedList<Integer> currentEncoders = new LinkedList<Integer>();
@@ -32,8 +33,12 @@ public class TeleOpControl {
     public void intake (ElapsedTime time, Gamepad gamepad) {
         if (controller.B() && !lift.isUp()) {
             intake.on(0.75);
+            time.reset();
+            start = false;
         } else if (controller.dpadLeft() && !lift.isUp()) {
             intake.reverse(0.3);
+        } else if (time.milliseconds() < 600 && !start) {
+            intake.reverse(0.75);
         } else {
             intake.off();
         }

@@ -17,14 +17,15 @@ public class MainTeleOp extends LinearOpMode {
     public void runOpMode() {
         controller = new Controller(gamepad1);
         control = new TeleOpControl(controller, hardwareMap);
-        ElapsedTime time = new ElapsedTime();
+        ElapsedTime liftTime = new ElapsedTime();
+        ElapsedTime intakeTime = new ElapsedTime();
         waitForStart();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
                 controller.update();
                 control.drive();
-                control.intake(time, gamepad1);
-                control.lift(time);
+                control.intake(intakeTime, gamepad1);
+                control.lift(liftTime);
                 control.launch();
                 telemetry.addData("lift state", control.lift.liftState);
                 telemetry.addData("hold state", control.lift.holdState);
