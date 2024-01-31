@@ -42,13 +42,12 @@ class Intake {
         lower_infeed.setPower(-speed);
         upper_infeed.setPower(-speed);
     }
-
     public void off() {
         lower_infeed.setPower(0);
         upper_infeed.setPower(0);
     }
     public boolean isFull () {
-        return dist.getDistance(DistanceUnit.MM) < 45;
+        return dist.getDistance(DistanceUnit.MM) < 60;
     }
 }
 class Lift {
@@ -59,7 +58,6 @@ class Lift {
     final int maxHeight = 4300;
     public String liftState;
     public String holdState;
-
     // Preset Positions
     final int pos1 = 2100;
     final int pos2 = 3200;
@@ -81,7 +79,7 @@ class Lift {
 
         // Initialize flip servo
         flip = hardwareMap.get(Servo.class, "flip");
-        flip.setPosition(0.59);
+        flip.setPosition(0.02);
         holdState = "inhold";
 
     }
@@ -99,7 +97,7 @@ class Lift {
             case "moving":
                 if (Math.abs(lift.getCurrentPosition()-lift.getTargetPosition()) < 1000 && lift.getCurrentPosition() > 1500) {
                     liftState = "position";
-                    open();
+                    open(false);
                 }
                 break;
             case "down":
@@ -109,19 +107,19 @@ class Lift {
                 break;
         }
         if (holdState.equals("outdrop")) {
-            if (time.milliseconds() > 200) {
+            if (time.milliseconds() > 70) {
                 release.setPosition(0);
                 holdState = "outhold";
             }
         }
     }
-    public void open() {
-        flip.setPosition(0.22);
+    public void open(boolean extra) {
+        flip.setPosition(0.65);
         holdState = "outhold";
     }
     public void close() {
         release.setPosition(0);
-        flip.setPosition(0.59);
+        flip.setPosition(0.02);
         holdState = "inhold";
     }
     private void checkForZero () {
@@ -133,7 +131,7 @@ class Lift {
     }
     public void drop () {
         if (!Objects.equals(holdState, "outhold")) {
-            open();
+            open(false);
         }
         release.setPosition(0.5);
         holdState = "outdrop";
@@ -172,10 +170,13 @@ class Lift {
     public void manualDown () {
         liftState = "manual";
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (lift.getCurrentPosition() > 0){
+        checkForZero();
+        if (lift.getCurrentPosition() > 500 && Objects.equals(holdState, "outhold")) {
+            lift.setPower(-1);
+        } else if (lift.getCurrentPosition() > 10 && Objects.equals(holdState, "inhold")){
             lift.setPower(-1);
         } else {
-            liftState = "down";
+            setPosition(lift.getCurrentPosition());
         }
     }
     public void manualHold () {

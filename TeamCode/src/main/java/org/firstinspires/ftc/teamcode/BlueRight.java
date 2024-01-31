@@ -6,9 +6,6 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Intake;
-import org.firstinspires.ftc.teamcode.Lift;
-import org.firstinspires.ftc.teamcode.ObjectDetector;
 import org.firstinspires.ftc.teamcode.RRDrive.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RRDrive.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Mat;
@@ -36,47 +33,47 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(0, 4, 0))
                 .build();
 
-        // Line up to left line
         TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(30, 0, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(30, 4, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(20, 0, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(24, 9, Math.toRadians(40)))
                 .build();
 
-        // from left line to board
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
-                .lineToConstantHeading(new Vector2d(51, -8))
-                .lineToConstantHeading(new Vector2d(51, 70))
-                .lineToConstantHeading(new Vector2d(23.5, 87.5))
+                .lineToLinearHeading(new Pose2d(15, -10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(49, -10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(49, 70, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(12, 94))
                 .build();
 
         // Line up to center line
         TrajectorySequence toCenterLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(27.2, -2, 0))
+                .lineToLinearHeading(new Pose2d(29, 4, 0))
+                .lineToLinearHeading(new Pose2d(27.2, 4, 0))
                 .build();
 
         // from center line to board
         TrajectorySequence centerToBoard = drive.trajectorySequenceBuilder(toCenterLine.end())
-                .lineToLinearHeading(new Pose2d(20, -16, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(52, -16, Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(51, 60))
-                .lineToConstantHeading(new Vector2d(28, 87.5))
+                .lineToLinearHeading(new Pose2d(15, -10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(50, -10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(50, 70, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(22, 92))
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(20, -7, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(20, -8, Math.toRadians(0)))
                 .build();
 
         TrajectorySequence rightToBoard = drive.trajectorySequenceBuilder(toRightLine.end())
-                .lineToLinearHeading(new Pose2d(20, -21, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(52, -21, Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(51, 60))
-                .lineToConstantHeading(new Vector2d(35, 87.5))
+                .lineToLinearHeading(new Pose2d(15, 5, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(50, 5, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(50, 70, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(27, 94))
                 .build();
 
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(leftToBoard.end())
-                .lineToConstantHeading(new Vector2d(4, 80))
-                .lineTo(new Vector2d(4, 92))
+                .lineToConstantHeading(new Vector2d(2, 80))
+                .lineTo(new Vector2d(2, 92))
                 .build();
 
 
@@ -89,29 +86,33 @@ public class BlueRight extends LinearOpMode {
 
         // Do stuff
         drive.followTrajectory(cameraLineup);
+        sleep(1000);
         int side = objectDetector.get_position();
+        double intakeSpeed = 0.3;
+        int intakeTimeMS = 2000;
+//        objectDetector.enable(false);
         switch (side) {
             case 0:
                 // Left
                 drive.followTrajectorySequence(toLeftLine);
-                intake.reverse(0.4);
-                sleep(1500);
+                intake.reverse(intakeSpeed);
+                sleep(intakeTimeMS);
                 intake.off();
                 drive.followTrajectorySequence(leftToBoard);
                 break;
             case 1:
                 // Middle
                 drive.followTrajectorySequence(toCenterLine);
-                intake.reverse(0.4);
-                sleep(1000);
+                intake.reverse(intakeSpeed);
+                sleep(intakeTimeMS);
                 intake.off();
                 drive.followTrajectorySequence(centerToBoard);
                 break;
             case 2:
                 // Right
                 drive.followTrajectorySequence(toRightLine);
-                intake.reverse(0.4);
-                sleep(1000);
+                intake.reverse(intakeSpeed);
+                sleep(intakeTimeMS);
                 intake.off();
                 drive.followTrajectorySequence(rightToBoard);
                 break;
@@ -120,20 +121,19 @@ public class BlueRight extends LinearOpMode {
         lift.setPosition(1180);
         sleep(700);
 //        flipgrip.flip(true);
+        lift.open(false);
         sleep(1000);
-        lift.setPosition(950);
+        lift.setPosition(1000);
         sleep(500);
 //        flipgrip.grip();
+        lift.drop();
+        sleep(200);
+        lift.setPosition(2200);
+        sleep(500);
+        lift.open(false);
         sleep(1000);
-//        flipgrip.grip();
-        sleep(100);
-        lift.setPosition(2000);
-        sleep(300);
-//        flipgrip.flip(false);
-        sleep(1000);
-        lift.setPosition(0);
+        lift.down();
         sleep(1500);
-//        lift.checkForZero();
         drive.followTrajectorySequence(park);
     }
 }

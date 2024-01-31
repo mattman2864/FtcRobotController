@@ -128,7 +128,7 @@ public class BlueLeft extends LinearOpMode {
         lift.setPosition(1180);
         sleep(700);
 //        flipgrip.flip(true);
-        lift.open();
+        lift.open(false);
         sleep(1000);
         lift.setPosition(1000);
         sleep(500);
@@ -137,7 +137,7 @@ public class BlueLeft extends LinearOpMode {
         sleep(200);
         lift.setPosition(2200);
         sleep(500);
-        lift.open();
+        lift.open(false);
         sleep(1000);
         lift.down();
         sleep(1500);

@@ -52,6 +52,12 @@ public class RedRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(15, 1, 0))
                 .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
                 .lineToLinearHeading(new Pose2d(36, -38, Math.toRadians(-90)))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         // Line up to center line
@@ -65,6 +71,12 @@ public class RedRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(15, 1, 0))
                 .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
                 .lineToLinearHeading(new Pose2d(30.8, -38, Math.toRadians(-90)))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
@@ -75,6 +87,12 @@ public class RedRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(4, 1, 0))
                 .splineToLinearHeading(new Pose2d(4, -25, Math.toRadians(-90)), Math.toRadians(0))
                 .lineToLinearHeading(new Pose2d(23.5, -38, Math.toRadians(-90)))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
 
@@ -125,19 +143,13 @@ public class RedRight extends LinearOpMode {
                 break;
 
         }
-        lift.setPosition(1180);
-        sleep(700);
-//        flipgrip.flip(true);
-        lift.open();
-        sleep(1000);
         lift.setPosition(1000);
         sleep(500);
-//        flipgrip.grip();
         lift.drop();
         sleep(200);
         lift.setPosition(2200);
         sleep(500);
-        lift.open();
+        lift.open(false);
         sleep(1000);
         lift.down();
         sleep(1500);

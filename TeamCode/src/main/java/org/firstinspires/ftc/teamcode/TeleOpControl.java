@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 public class TeleOpControl {
     Drive driver;
@@ -19,6 +20,7 @@ public class TeleOpControl {
     int lastEncoder = 0;
     LinkedList<Integer> previousEncoders = new LinkedList<Integer>();
     LinkedList<Integer> currentEncoders = new LinkedList<Integer>();
+    boolean lastManual = false;
     public TeleOpControl (Controller controller, HardwareMap hardwareMap) {
         driver = new Drive(hardwareMap);
         intake = new Intake(hardwareMap);
@@ -42,7 +44,7 @@ public class TeleOpControl {
         } else {
             intake.off();
         }
-        if (intake.isFull()) {
+        if (intake.isFull() && Objects.equals(lift.liftState, "down") && time.milliseconds() < 3000) {
             gamepad.rumble(0.2, 0.2,300);
         }
     }
@@ -69,21 +71,25 @@ public class TeleOpControl {
                 lift.prePosDown();
             }
         }
-        if (controller.A() && lift.isUp()) {
+        if (controller.AOnce() && lift.isUp()) {
             lift.drop();
+            time.reset();
         }
         if (controller.right_trigger > 0) {
             lift.manualUp();
+            lastManual = true;
         } else if (controller.left_trigger > 0) {
             lift.manualDown();
-        } else if (lift.isManual()) {
+            lastManual = true;
+        } else if (lastManual) {
             lift.manualHold();
+            lastManual = false;
         }
         if (controller.XOnce()) {
             if (lift.isOut()) {
                 lift.close();
             } else {
-                lift.open();
+                lift.open(false);
             }
         }
     }

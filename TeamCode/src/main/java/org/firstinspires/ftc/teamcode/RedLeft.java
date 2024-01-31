@@ -47,38 +47,40 @@ public class RedLeft extends LinearOpMode {
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
                 .lineToLinearHeading(new Pose2d(15, -5, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(51, -5, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(51, -60, Math.toRadians(-90)))
-                .lineToConstantHeading(new Vector2d(32, -93))
+                .lineToLinearHeading(new Pose2d(51, -70, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(28.5, -95))
                 .build();
 
         // Line up to center line
         TrajectorySequence toCenterLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(27.2, 2, 0))
+                .lineToLinearHeading(new Pose2d(29, -4, 0))
+                .lineToLinearHeading(new Pose2d(27.2, -4, 0))
                 .build();
 
         // from center line to board
         TrajectorySequence centerToBoard = drive.trajectorySequenceBuilder(toCenterLine.end())
-                .lineToLinearHeading(new Pose2d(20, 16, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(52, 16, Math.toRadians(-90)))
-                .lineToConstantHeading(new Vector2d(51, -60))
-                .lineToConstantHeading(new Vector2d(33.5, -88))
+                .lineToLinearHeading(new Pose2d(15, 10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(52, 10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(51, -70, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(26, -95))
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(30, 0, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(30, -4, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(20, 0, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(24, -9, Math.toRadians(-40)))
                 .build();
 
         TrajectorySequence rightToBoard = drive.trajectorySequenceBuilder(toRightLine.end())
-                .lineToConstantHeading(new Vector2d(53, 8))
-                .lineToConstantHeading(new Vector2d(53, -70))
-                .lineToConstantHeading(new Vector2d(27, -88))
+                .lineToLinearHeading(new Pose2d(15, 10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(52, 10, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(51, -70, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(16, -94))
                 .build();
 
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(leftToBoard.end())
-                .lineToConstantHeading(new Vector2d(4, -80))
-                .lineTo(new Vector2d(4, -92))
+                .lineToConstantHeading(new Vector2d(2, -80))
+                .lineTo(new Vector2d(2, -92))
                 .build();
 
 
@@ -92,7 +94,7 @@ public class RedLeft extends LinearOpMode {
         // Do stuff
         drive.followTrajectory(cameraLineup);
         sleep(1000);
-        int side = 2;//objectDetector.get_position();
+        int side = objectDetector.get_position();
         telemetry.addData("side", side);
         telemetry.update();
         double intakeSpeed = 0.3;
@@ -128,7 +130,7 @@ public class RedLeft extends LinearOpMode {
         lift.setPosition(1180);
         sleep(700);
 //        flipgrip.flip(true);
-        lift.open();
+        lift.open(false);
         sleep(1000);
         lift.setPosition(1000);
         sleep(500);
@@ -137,7 +139,7 @@ public class RedLeft extends LinearOpMode {
         sleep(200);
         lift.setPosition(2200);
         sleep(500);
-        lift.open();
+        lift.open(false);
         sleep(1000);
         lift.down();
         sleep(1500);
