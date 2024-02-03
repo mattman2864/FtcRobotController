@@ -79,7 +79,7 @@ class Lift {
 
         // Initialize flip servo
         flip = hardwareMap.get(Servo.class, "flip");
-        flip.setPosition(0.02);
+        flip.setPosition(0.0);
         holdState = "inhold";
 
     }
@@ -119,7 +119,7 @@ class Lift {
     }
     public void close() {
         release.setPosition(0);
-        flip.setPosition(0.02);
+        flip.setPosition(0.0);
         holdState = "inhold";
     }
     private void checkForZero () {
@@ -300,27 +300,27 @@ class ObjectDetector {
         Recognition myTfodRecognition;
         float x;
         float y;
-
-        // Get a list of recognitions from TFOD.
-        myTfodRecognitions = myTfodProcessor.getRecognitions();
-        // Iterate through list and call a function to display info for each recognized object.
-        float xFinal = 0;
-        float confidenceThreshold = 0.6f;
-        for (Recognition myTfodRecognition_item : myTfodRecognitions) {
-            myTfodRecognition = myTfodRecognition_item;
-            // Display position.
-            x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
-            y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
-            if (myTfodRecognition_item.getConfidence() > confidenceThreshold) {
-                xFinal = x;
+        for (int i = 1; i < 1000; i++) {
+            // Get a list of recognitions from TFOD.
+            myTfodRecognitions = myTfodProcessor.getRecognitions();
+            // Iterate through list and call a function to display info for each recognized object.
+            float xFinal = 0;
+            float confidenceThreshold = 0.6f;
+            for (Recognition myTfodRecognition_item : myTfodRecognitions) {
+                myTfodRecognition = myTfodRecognition_item;
+                // Display position.
+                x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
+                y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
+                if (myTfodRecognition_item.getConfidence() > confidenceThreshold) {
+                    xFinal = x;
+                }
+            }
+            if (xFinal > 300) {
+                return 2;
+            } else if (myTfodRecognitions.size() > 0) {
+                return 1;
             }
         }
-        if (xFinal > 300) {
-            return 2;
-        } else if (myTfodRecognitions.size() > 0) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return 0;
     }
 }

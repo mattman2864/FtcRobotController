@@ -79,8 +79,7 @@ public class RedLeft extends LinearOpMode {
 
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(leftToBoard.end())
-                .lineToConstantHeading(new Vector2d(2, -80))
-                .lineTo(new Vector2d(2, -92))
+                .lineToConstantHeading(new Vector2d(40, -85))
                 .build();
 
 
@@ -144,9 +143,5 @@ public class RedLeft extends LinearOpMode {
         lift.down();
         sleep(1500);
         drive.followTrajectorySequence(park);
-
-
-
-
     }
 }

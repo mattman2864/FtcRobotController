@@ -43,8 +43,8 @@ public class RedRight extends LinearOpMode {
 
         // Line up to left line
         TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(30, 0, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(30, 4, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(20, 0, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(24, 6, Math.toRadians(70)))
                 .build();
 
         // from left line to board
