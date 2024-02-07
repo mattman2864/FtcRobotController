@@ -48,6 +48,12 @@ public class BlueLeft extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(4, 1, 0))
                 .splineToLinearHeading(new Pose2d(4, 25, Math.toRadians(90)), Math.toRadians(0))
                 .lineToLinearHeading(new Pose2d(23, 38, Math.toRadians(90)))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         // Line up to center line
@@ -61,6 +67,12 @@ public class BlueLeft extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(15, -1, 0))
                 .splineToLinearHeading(new Pose2d(20, 25, Math.toRadians(90)), Math.toRadians(0))
                 .lineToLinearHeading(new Pose2d(26, 38, Math.toRadians(90)))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
@@ -72,12 +84,17 @@ public class BlueLeft extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(15, -1, 0))
                 .splineToLinearHeading(new Pose2d(20, 25, Math.toRadians(90)), Math.toRadians(0))
                 .lineToLinearHeading(new Pose2d(35, 38, Math.toRadians(90)))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(leftToBoard.end())
-                .lineToLinearHeading(new Pose2d(2, 25, Math.toRadians(90)))
-                .lineTo(new Vector2d(2, 43))
+                .lineToLinearHeading(new Pose2d(2, 32, Math.toRadians(90)))
                 .build();
 
 
@@ -105,6 +122,7 @@ public class BlueLeft extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
+                sleep(7000);
                 drive.followTrajectorySequence(leftToBoard);
                 break;
             case 1:
@@ -113,6 +131,7 @@ public class BlueLeft extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
+                sleep(7000);
                 drive.followTrajectorySequence(centerToBoard);
                 break;
             case 2:
@@ -121,27 +140,22 @@ public class BlueLeft extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
+                sleep(7000);
                 drive.followTrajectorySequence(rightToBoard);
                 break;
 
         }
-        lift.setPosition(1180);
-        sleep(700);
-//        flipgrip.flip(true);
-        lift.open(false);
-        sleep(1000);
         lift.setPosition(1000);
         sleep(500);
-//        flipgrip.grip();
         lift.drop();
         sleep(200);
         lift.setPosition(2200);
         sleep(500);
         lift.open(false);
         sleep(1000);
-        lift.down();
-        sleep(1500);
         drive.followTrajectorySequence(park);
+        lift.down();
+        sleep(2000);
 
 
 

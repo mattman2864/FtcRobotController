@@ -123,7 +123,7 @@ class Lift {
         holdState = "inhold";
     }
     private void checkForZero () {
-        if (lift.getTargetPosition() == 0 && (Math.abs(lift.getCurrentPosition()) < 10 || liftTouch.isPressed())) {
+        if (lift.getTargetPosition() == 0 && (liftTouch.isPressed() || lift.getCurrentPosition() < 30)) {
             lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftState = "down";
             holdState = "inhold";
@@ -141,7 +141,7 @@ class Lift {
         prePos = 1;
     }
     public void down () {
-        if (lift.getCurrentPosition() < 2000) {
+        if (lift.getCurrentPosition() < 2000 && Objects.equals(liftState, "outhold")) {
             return;
         }
         holdState = "inhold";

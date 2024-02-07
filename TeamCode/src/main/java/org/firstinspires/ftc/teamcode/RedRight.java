@@ -44,7 +44,7 @@ public class RedRight extends LinearOpMode {
         // Line up to left line
         TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
                 .lineToLinearHeading(new Pose2d(20, 0, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(24, 6, Math.toRadians(70)))
+                .lineToLinearHeading(new Pose2d(26, 7, Math.toRadians(70)))
                 .build();
 
         // from left line to board
@@ -99,8 +99,7 @@ public class RedRight extends LinearOpMode {
 
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(centerToBoard.end())
-                .lineToLinearHeading(new Pose2d(1, -25, Math.toRadians(-90)))
-                .lineTo(new Vector2d(1, -43))
+                .lineToLinearHeading(new Pose2d(1, -27, Math.toRadians(-90)))
                 .build();
 
         telemetry.addLine("Initialized!");
@@ -123,6 +122,7 @@ public class RedRight extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
+                sleep(7000);
                 drive.followTrajectorySequence(leftToBoard);
                 break;
             case 1:
@@ -131,6 +131,7 @@ public class RedRight extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
+                sleep(7000);
                 drive.followTrajectorySequence(centerToBoard);
                 break;
             case 2:
@@ -139,6 +140,7 @@ public class RedRight extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
+                sleep(7000);
                 drive.followTrajectorySequence(rightToBoard);
                 break;
 
@@ -151,8 +153,8 @@ public class RedRight extends LinearOpMode {
         sleep(500);
         lift.open(false);
         sleep(1000);
-        lift.down();
-        sleep(1500);
         drive.followTrajectorySequence(park);
+        lift.down();
+        sleep(2000);
     }
 }

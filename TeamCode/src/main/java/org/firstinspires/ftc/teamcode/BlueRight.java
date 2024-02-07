@@ -43,6 +43,12 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(49, -10, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(49, 70, Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(12, 94))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         // Line up to center line
@@ -57,6 +63,12 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(50, -10, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(50, 70, Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(22, 92))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         TrajectorySequence toRightLine = drive.trajectorySequenceBuilder(cameraLineup.end())
@@ -68,6 +80,12 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(50, 5, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(50, 70, Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(27, 94))
+                .addTemporalMarker(1, () -> {
+                    lift.setPosition(1180);
+                })
+                .addTemporalMarker(2, () -> {
+                    lift.open(false);
+                })
                 .build();
 
         //park after placing pixel
@@ -117,22 +135,16 @@ public class BlueRight extends LinearOpMode {
                 break;
 
         }
-        lift.setPosition(1180);
-        sleep(700);
-//        flipgrip.flip(true);
-        lift.open(false);
-        sleep(1000);
         lift.setPosition(1000);
         sleep(500);
-//        flipgrip.grip();
         lift.drop();
         sleep(200);
         lift.setPosition(2200);
         sleep(500);
         lift.open(false);
         sleep(1000);
-        lift.down();
-        sleep(1500);
         drive.followTrajectorySequence(park);
+        lift.down();
+        sleep(2000);
     }
 }

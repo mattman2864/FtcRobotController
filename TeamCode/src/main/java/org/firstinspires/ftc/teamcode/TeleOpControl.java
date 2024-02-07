@@ -34,7 +34,7 @@ public class TeleOpControl {
     }
     public void intake (ElapsedTime time, Gamepad gamepad) {
         if (controller.B() && !lift.isUp()) {
-            intake.on(0.75);
+            intake.on(1);
             time.reset();
             start = false;
         } else if (controller.dpadLeft() && !lift.isUp()) {
