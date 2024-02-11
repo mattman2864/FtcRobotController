@@ -94,6 +94,7 @@ public class BlueLeft extends LinearOpMode {
 
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(leftToBoard.end())
+                .lineToLinearHeading(new Pose2d(10, 20, Math.toRadians(90)))
                 .lineToLinearHeading(new Pose2d(2, 32, Math.toRadians(90)))
                 .build();
 
@@ -122,7 +123,7 @@ public class BlueLeft extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
-                sleep(7000);
+//                sleep(7000);
                 drive.followTrajectorySequence(leftToBoard);
                 break;
             case 1:
@@ -131,7 +132,7 @@ public class BlueLeft extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
-                sleep(7000);
+//                sleep(7000);
                 drive.followTrajectorySequence(centerToBoard);
                 break;
             case 2:
@@ -140,7 +141,7 @@ public class BlueLeft extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
-                sleep(7000);
+//                sleep(7000);
                 drive.followTrajectorySequence(rightToBoard);
                 break;
 

@@ -35,18 +35,18 @@ public class BlueRight extends LinearOpMode {
 
         TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
                 .lineToLinearHeading(new Pose2d(20, 0, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(24, 9, Math.toRadians(40)))
+                .lineToLinearHeading(new Pose2d(24, 7, Math.toRadians(40)))
                 .build();
 
         TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
                 .lineToLinearHeading(new Pose2d(15, -10, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(49, -10, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(49, 70, Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(12, 94))
-                .addTemporalMarker(1, () -> {
+                .lineToConstantHeading(new Vector2d(14, 92))
+                .addTemporalMarker(8, () -> {
                     lift.setPosition(1180);
                 })
-                .addTemporalMarker(2, () -> {
+                .addTemporalMarker(9, () -> {
                     lift.open(false);
                 })
                 .build();
@@ -63,10 +63,10 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(50, -10, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(50, 70, Math.toRadians(90)))
                 .lineToConstantHeading(new Vector2d(22, 92))
-                .addTemporalMarker(1, () -> {
+                .addTemporalMarker(8, () -> {
                     lift.setPosition(1180);
                 })
-                .addTemporalMarker(2, () -> {
+                .addTemporalMarker(9, () -> {
                     lift.open(false);
                 })
                 .build();
@@ -79,11 +79,11 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(15, 5, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(50, 5, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(50, 70, Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(27, 94))
-                .addTemporalMarker(1, () -> {
+                .lineToConstantHeading(new Vector2d(25, 91))
+                .addTemporalMarker(8, () -> {
                     lift.setPosition(1180);
                 })
-                .addTemporalMarker(2, () -> {
+                .addTemporalMarker(9, () -> {
                     lift.open(false);
                 })
                 .build();

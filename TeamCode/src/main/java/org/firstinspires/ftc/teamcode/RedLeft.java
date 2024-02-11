@@ -49,10 +49,10 @@ public class RedLeft extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(51, -5, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(51, -70, Math.toRadians(-90)))
                 .lineToConstantHeading(new Vector2d(28.5, -95))
-                .addTemporalMarker(1, () -> {
+                .addTemporalMarker(8, () -> {
                     lift.setPosition(1180);
                 })
-                .addTemporalMarker(2, () -> {
+                .addTemporalMarker(9, () -> {
                     lift.open(false);
                 })
                 .build();
@@ -69,10 +69,10 @@ public class RedLeft extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(52, 10, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(51, -70, Math.toRadians(-90)))
                 .lineToConstantHeading(new Vector2d(26, -95))
-                .addTemporalMarker(1, () -> {
+                .addTemporalMarker(8, () -> {
                     lift.setPosition(1180);
                 })
-                .addTemporalMarker(2, () -> {
+                .addTemporalMarker(9, () -> {
                     lift.open(false);
                 })
                 .build();
@@ -87,10 +87,10 @@ public class RedLeft extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(52, 10, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(51, -70, Math.toRadians(-90)))
                 .lineToConstantHeading(new Vector2d(16, -94))
-                .addTemporalMarker(1, () -> {
+                .addTemporalMarker(8, () -> {
                     lift.setPosition(1180);
                 })
-                .addTemporalMarker(2, () -> {
+                .addTemporalMarker(9, () -> {
                     lift.open(false);
                 })
                 .build();

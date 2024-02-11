@@ -44,7 +44,7 @@ public class RedRight extends LinearOpMode {
         // Line up to left line
         TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
                 .lineToLinearHeading(new Pose2d(20, 0, Math.toRadians(0)))
-                .lineToLinearHeading(new Pose2d(26, 7, Math.toRadians(70)))
+                .lineToLinearHeading(new Pose2d(26, 5, Math.toRadians(70)))
                 .build();
 
         // from left line to board
@@ -100,6 +100,7 @@ public class RedRight extends LinearOpMode {
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(centerToBoard.end())
                 .lineToLinearHeading(new Pose2d(1, -27, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(1, -35, Math.toRadians(-90)))
                 .build();
 
         telemetry.addLine("Initialized!");
@@ -122,7 +123,7 @@ public class RedRight extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
-                sleep(7000);
+//                sleep(7000);
                 drive.followTrajectorySequence(leftToBoard);
                 break;
             case 1:
@@ -131,7 +132,7 @@ public class RedRight extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
-                sleep(7000);
+//                sleep(7000);
                 drive.followTrajectorySequence(centerToBoard);
                 break;
             case 2:
@@ -140,7 +141,7 @@ public class RedRight extends LinearOpMode {
                 intake.reverse(intakeSpeed);
                 sleep(intakeTimeMS);
                 intake.off();
-                sleep(7000);
+//                sleep(7000);
                 drive.followTrajectorySequence(rightToBoard);
                 break;
 
