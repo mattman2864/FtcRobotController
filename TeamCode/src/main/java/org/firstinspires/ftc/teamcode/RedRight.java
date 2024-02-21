@@ -42,23 +42,36 @@ public class RedRight extends LinearOpMode {
                 .build();
 
         // Line up to left line
-        TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
+        TrajectorySequence left = drive.trajectorySequenceBuilder(cameraLineup.end())
                 .lineToLinearHeading(new Pose2d(20, 0, Math.toRadians(0)))
                 .lineToLinearHeading(new Pose2d(26, 5, Math.toRadians(70)))
-                .build();
-
-        // from left line to board
-        TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
+                .addTemporalMarker(() -> {
+                    intake.reverse(0.3);
+                })
+                .waitSeconds(1)
+                .addTemporalMarker( intake::off)
                 .lineToLinearHeading(new Pose2d(15, 1, 0))
-                .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(36, -38, Math.toRadians(-90)))
-                .addTemporalMarker(1, () -> {
+                .addTemporalMarker(() -> {
                     lift.setPosition(1180);
                 })
-                .addTemporalMarker(2, () -> {
+                .splineToLinearHeading(new Pose2d(20, -25, Math.toRadians(-90)), Math.toRadians(0))
+                .addTemporalMarker(() -> {
                     lift.open(false);
                 })
+                .lineToLinearHeading(new Pose2d(36, -38, Math.toRadians(-90)))
+                .addTemporalMarker(() -> {
+                    lift.setPosition(1000);
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(lift::drop)
+                .waitSeconds(0.2)
+                .addDisplacementMarker(()->{
+                    lift.setPosition(2200);
+                })
+                .waitSeconds(0.5)
+                .addDisplacementMarker(lift::close)
                 .build();
+
 
         // Line up to center line
         TrajectorySequence toCenterLine = drive.trajectorySequenceBuilder(cameraLineup.end())
@@ -100,6 +113,7 @@ public class RedRight extends LinearOpMode {
         //park after placing pixel
         TrajectorySequence park = drive.trajectorySequenceBuilder(centerToBoard.end())
                 .lineToLinearHeading(new Pose2d(1, -27, Math.toRadians(-90)))
+                .addDisplacementMarker(lift::down)
                 .lineToLinearHeading(new Pose2d(1, -35, Math.toRadians(-90)))
                 .build();
 
@@ -119,12 +133,8 @@ public class RedRight extends LinearOpMode {
         switch (side) {
             case 0:
                 // Left
-                drive.followTrajectorySequence(toLeftLine);
-                intake.reverse(intakeSpeed);
-                sleep(intakeTimeMS);
-                intake.off();
-//                sleep(7000);
-                drive.followTrajectorySequence(leftToBoard);
+                drive.followTrajectorySequence(left);
+                drive.followTrajectorySequence(park);
                 break;
             case 1:
                 // Middle
@@ -146,16 +156,5 @@ public class RedRight extends LinearOpMode {
                 break;
 
         }
-        lift.setPosition(1000);
-        sleep(500);
-        lift.drop();
-        sleep(200);
-        lift.setPosition(2200);
-        sleep(500);
-        lift.open(false);
-        sleep(1000);
-        drive.followTrajectorySequence(park);
-        lift.down();
-        sleep(2000);
     }
 }

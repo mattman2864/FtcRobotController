@@ -300,7 +300,7 @@ class ObjectDetector {
         Recognition myTfodRecognition;
         float x;
         float y;
-        for (int i = 1; i < 1000; i++) {
+        for (int i = 1; i < 50; i++) {
             // Get a list of recognitions from TFOD.
             myTfodRecognitions = myTfodProcessor.getRecognitions();
             // Iterate through list and call a function to display info for each recognized object.
