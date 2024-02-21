@@ -14,19 +14,30 @@ public class TeleOpControl {
     Intake intake;
     Lift lift;
     Controller controller;
+    Controller controller2;
     Launcher launcher;
+
+    ExtraCommands extraCommands;
+
+    Displayer displayer;
+
+    AprilTagDetector aprilTagDetector;
     boolean out;
     boolean start = true;
     int lastEncoder = 0;
     LinkedList<Integer> previousEncoders = new LinkedList<Integer>();
     LinkedList<Integer> currentEncoders = new LinkedList<Integer>();
     boolean lastManual = false;
-    public TeleOpControl (Controller controller, HardwareMap hardwareMap) {
+    public TeleOpControl (Controller controller, HardwareMap hardwareMap, Controller controller2) {
         driver = new Drive(hardwareMap);
         intake = new Intake(hardwareMap);
         lift = new Lift(hardwareMap);
         launcher = new Launcher(hardwareMap);
+        extraCommands = new ExtraCommands(hardwareMap);
+        displayer = new Displayer();
+        aprilTagDetector = new AprilTagDetector(hardwareMap);
         this.controller = controller;
+        this.controller2 = controller2;
         boolean out = true;
     }
     public void drive () {
@@ -50,35 +61,35 @@ public class TeleOpControl {
     }
     public void lift (ElapsedTime time) {
         lift.update(time);
-        if (controller.YOnce()) {
+        if (controller2.YOnce()) {
             if (lift.isUp()) {
                 lift.down();
             } else {
                 lift.place();
             }
         }
-        if (controller.dpadUpOnce()) {
+        if (controller2.dpadUpOnce()) {
             if (!lift.isUp()) {
                 lift.place();
             } else {
                 lift.prePosUp();
             }
         }
-        if (controller.dpadDownOnce()) {
+        if (controller2.dpadDownOnce()) {
             if (lift.prePos == 1) {
                 lift.down();
             } else {
                 lift.prePosDown();
             }
         }
-        if (controller.AOnce() && lift.isUp()) {
+        if (controller2.AOnce() && lift.isUp()) {
             lift.drop();
             time.reset();
         }
-        if (controller.right_trigger > 0) {
+        if (controller2.right_trigger > 0) {
             lift.manualUp();
             lastManual = true;
-        } else if (controller.left_trigger > 0) {
+        } else if (controller2.left_trigger > 0) {
             lift.manualDown();
             lastManual = true;
         } else if (lastManual) {
@@ -96,6 +107,17 @@ public class TeleOpControl {
     public void launch () {
         if (controller.leftBumper() && controller.rightBumper()) {
             launcher.shoot();
+        }
+    }
+
+    public void ExtraCommands() {
+
+        if (controller.leftBumper()) {
+            extraCommands.moveLeft();
+        }
+
+        if (controller.rightBumper()) {
+            extraCommands.moveRight();
         }
     }
 }

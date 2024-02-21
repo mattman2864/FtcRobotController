@@ -13,10 +13,13 @@ public class MainTeleOp extends LinearOpMode {
 
     TeleOpControl control;
     Controller controller;
+
+    Controller controller2;
     @Override
     public void runOpMode() {
         controller = new Controller(gamepad1);
-        control = new TeleOpControl(controller, hardwareMap);
+        controller2 = new Controller(gamepad2);
+        control = new TeleOpControl(controller, hardwareMap, controller2);
         ElapsedTime liftTime = new ElapsedTime();
         ElapsedTime intakeTime = new ElapsedTime();
         waitForStart();
@@ -27,11 +30,15 @@ public class MainTeleOp extends LinearOpMode {
                 control.intake(intakeTime, gamepad1);
                 control.lift(liftTime);
                 control.launch();
-                telemetry.addData("lift state", control.lift.liftState);
-                telemetry.addData("hold state", control.lift.holdState);
-                telemetry.addData("current position", control.lift.lift.getCurrentPosition());
-                telemetry.addData("target position", control.lift.lift.getTargetPosition());
-                telemetry.addData("lift mode", control.lift.lift.getMode());
+                control.ExtraCommands();
+                //telemetry.addData("lift state", control.lift.liftState);
+                //telemetry.addData("hold state", control.lift.holdState);
+                //telemetry.addData("current position", control.lift.lift.getCurrentPosition());
+                //telemetry.addData("target position", control.lift.lift.getTargetPosition());
+                //telemetry.addData("lift mode", control.lift.lift.getMode());
+                for (int i = 0; i < control.displayer.display.size(); i++) {
+                    telemetry.addData(control.displayer.display.get(i).get(0), control.displayer.display.get(i).get(1));
+                }
                 telemetry.update();
 
             }
