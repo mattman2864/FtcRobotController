@@ -79,8 +79,13 @@ public class TeleOpControl {
             lift.manualUp();
             lastManual = true;
         } else if (controller.left_trigger > 0) {
-            lift.manualDown();
-            lastManual = true;
+            if (controller.dpadRight()) {
+                lift.manualDown(true);
+                lastManual = true;
+            } else {
+                lift.manualDown(false);
+                lastManual = true;
+            }
         } else if (lastManual) {
             lift.manualHold();
             lastManual = false;

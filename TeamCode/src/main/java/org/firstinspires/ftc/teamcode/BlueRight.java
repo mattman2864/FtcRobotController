@@ -19,7 +19,7 @@ public class BlueRight extends LinearOpMode {
 
 
         // Initialize stuff
-        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "BlueModel.tflite");
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap);
         objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);

@@ -22,7 +22,7 @@ public class CameraTest extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
-        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap);
         objectDetector.initTfod();
         waitForStart();
         while (opModeIsActive()) {

@@ -25,7 +25,7 @@ public class BlueLeft extends LinearOpMode {
 
 
         // Initialize stuff
-        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "BlueModel.tflite");
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap);
         objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -39,21 +39,34 @@ public class BlueLeft extends LinearOpMode {
                 .build();
 
         // Line up to left line
-        TrajectorySequence toLeftLine = drive.trajectorySequenceBuilder(cameraLineup.end())
-                .lineToLinearHeading(new Pose2d(20, 7, Math.toRadians(0)))
-                .build();
-
-        // from left line to board
-        TrajectorySequence leftToBoard = drive.trajectorySequenceBuilder(toLeftLine.end())
-                .lineToLinearHeading(new Pose2d(4, 1, 0))
-                .splineToLinearHeading(new Pose2d(4, 25, Math.toRadians(90)), Math.toRadians(0))
-                .lineToLinearHeading(new Pose2d(23, 38, Math.toRadians(90)))
-                .addTemporalMarker(1, () -> {
-                    lift.setPosition(1180);
+        TrajectorySequence left = drive.trajectorySequenceBuilder(cameraLineup.end())
+                .lineTo(new Vector2d(17, 7))
+                .addTemporalMarker(() -> {
+                    intake.reverse(0.3);
                 })
-                .addTemporalMarker(2, () -> {
+                .waitSeconds(1)
+                .addTemporalMarker( intake::off)
+                .waitSeconds(0) // ADD WAIT HERE FOR ICE (IN SECONDS)
+                .lineToConstantHeading(new Vector2d(10, -1))
+                .addTemporalMarker(() -> {
+                    lift.setPosition(1300);
+                })
+                .splineToLinearHeading(new Pose2d(10, 25, Math.toRadians(90)), Math.toRadians(0))
+                .addTemporalMarker(() -> {
                     lift.open(false);
                 })
+                .splineToConstantHeading(new Vector2d(23, 38), Math.toRadians(90))
+                .addTemporalMarker(() -> {
+                    lift.setPosition(1000);
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(lift::drop)
+                .waitSeconds(0.2)
+                .addTemporalMarker(()->{
+                    lift.setPosition(2200);
+                })
+                .waitSeconds(0.5)
+                .addDisplacementMarker(lift::close)
                 .build();
 
         // Line up to center line
@@ -93,9 +106,10 @@ public class BlueLeft extends LinearOpMode {
                 .build();
 
         //park after placing pixel
-        TrajectorySequence park = drive.trajectorySequenceBuilder(leftToBoard.end())
-                .lineToLinearHeading(new Pose2d(10, 20, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(2, 32, Math.toRadians(90)))
+        TrajectorySequence park = drive.trajectorySequenceBuilder(left.end())
+                .lineToLinearHeading(new Pose2d(1, 25, Math.toRadians(90)))
+                .addDisplacementMarker(lift::down)
+                .lineToLinearHeading(new Pose2d(1, 35, Math.toRadians(90)))
                 .build();
 
 
@@ -115,16 +129,11 @@ public class BlueLeft extends LinearOpMode {
         telemetry.update();
         double intakeSpeed = 0.3;
         int intakeTimeMS = 2000;
-//        objectDetector.enable(false);
         switch (side) {
             case 0:
                 // Left
-                drive.followTrajectorySequence(toLeftLine);
-                intake.reverse(intakeSpeed);
-                sleep(intakeTimeMS);
-                intake.off();
-//                sleep(7000);
-                drive.followTrajectorySequence(leftToBoard);
+                drive.followTrajectorySequence(left);
+                drive.followTrajectorySequence(park);
                 break;
             case 1:
                 // Middle
@@ -146,20 +155,5 @@ public class BlueLeft extends LinearOpMode {
                 break;
 
         }
-        lift.setPosition(1000);
-        sleep(500);
-        lift.drop();
-        sleep(200);
-        lift.setPosition(2200);
-        sleep(500);
-        lift.open(false);
-        sleep(1000);
-        drive.followTrajectorySequence(park);
-        lift.down();
-        sleep(2000);
-
-
-
-
     }
 }

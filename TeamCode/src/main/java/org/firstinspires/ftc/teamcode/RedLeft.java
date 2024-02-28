@@ -23,7 +23,7 @@ public class RedLeft extends LinearOpMode {
 
 
         // Initialize stuff
-        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap);
         objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);

@@ -167,7 +167,7 @@ class Lift {
             manualHold();
         }
     }
-    public void manualDown () {
+    public void manualDown (boolean override) {
         liftState = "manual";
         lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         checkForZero();
@@ -175,7 +175,9 @@ class Lift {
             lift.setPower(-1);
         } else if (lift.getCurrentPosition() > 10 && Objects.equals(holdState, "inhold")){
             lift.setPower(-1);
-        } else {
+        } else if (override && !(liftTouch.isPressed())) {
+            lift.setPower(-0.5);
+        }else {
             setPosition(lift.getCurrentPosition());
         }
     }
@@ -265,9 +267,8 @@ class ObjectDetector {
     VisionPortal myVisionPortal;
     HardwareMap hardwareMap;
     String modelName;
-    public ObjectDetector (HardwareMap map, String name) {
-        this.hardwareMap = map;
-        modelName = name;
+    public ObjectDetector (HardwareMap map) {
+        hardwareMap = map;
     }
     public void initTfod() {
         USE_WEBCAM = true;
@@ -277,9 +278,9 @@ class ObjectDetector {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName(modelName);
+        myTfodProcessorBuilder.setModelFileName("BlueModel.tflite");
         // Set the full ordered list of labels the model is trained to recognize.
-        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedTP", "Object"));
+        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedTP", "Object", "BlueTP"));
         // Set the aspect ratio for the images used when the model was created.
         myTfodProcessorBuilder.setModelAspectRatio(16 / 9);
         // Create a TfodProcessor by calling build.
