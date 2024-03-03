@@ -267,8 +267,9 @@ class ObjectDetector {
     VisionPortal myVisionPortal;
     HardwareMap hardwareMap;
     String modelName;
-    public ObjectDetector (HardwareMap map) {
+    public ObjectDetector (HardwareMap map, String name) {
         hardwareMap = map;
+        modelName = name;
     }
     public void initTfod() {
         USE_WEBCAM = true;
@@ -278,7 +279,7 @@ class ObjectDetector {
         // First, create a TfodProcessor.Builder.
         myTfodProcessorBuilder = new TfodProcessor.Builder();
         // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName("BlueModel.tflite");
+        myTfodProcessorBuilder.setModelFileName(modelName);
         // Set the full ordered list of labels the model is trained to recognize.
         myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedTP", "Object", "BlueTP"));
         // Set the aspect ratio for the images used when the model was created.
@@ -301,26 +302,24 @@ class ObjectDetector {
         Recognition myTfodRecognition;
         float x;
         float y;
-        for (int i = 1; i < 50; i++) {
-            // Get a list of recognitions from TFOD.
-            myTfodRecognitions = myTfodProcessor.getRecognitions();
-            // Iterate through list and call a function to display info for each recognized object.
-            float xFinal = 0;
-            float confidenceThreshold = 0.6f;
-            for (Recognition myTfodRecognition_item : myTfodRecognitions) {
-                myTfodRecognition = myTfodRecognition_item;
-                // Display position.
-                x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
-                y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
-                if (myTfodRecognition_item.getConfidence() > confidenceThreshold) {
-                    xFinal = x;
-                }
+        // Get a list of recognitions from TFOD.
+        myTfodRecognitions = myTfodProcessor.getRecognitions();
+        // Iterate through list and call a function to display info for each recognized object.
+        float xFinal = 0;
+        float confidenceThreshold = 0.6f;
+        for (Recognition myTfodRecognition_item : myTfodRecognitions) {
+            myTfodRecognition = myTfodRecognition_item;
+            // Display position.
+            x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
+            y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
+            if (myTfodRecognition_item.getConfidence() > confidenceThreshold) {
+                xFinal = x;
             }
-            if (xFinal > 300) {
-                return 2;
-            } else if (myTfodRecognitions.size() > 0) {
-                return 1;
-            }
+        }
+        if (xFinal > 300) {
+            return 2;
+        } else if (myTfodRecognitions.size() > 0) {
+            return 1;
         }
         return 0;
     }

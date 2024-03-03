@@ -26,7 +26,7 @@ public class RedRight extends LinearOpMode {
 
 
         // Initialize stuff
-        ObjectDetector objectDetector = new ObjectDetector(hardwareMap);
+        ObjectDetector objectDetector = new ObjectDetector(hardwareMap, "RedModel.tflite");
         objectDetector.initTfod();
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -50,7 +50,7 @@ public class RedRight extends LinearOpMode {
                 })
                 .waitSeconds(1)
                 .addTemporalMarker( intake::off)
-                .waitSeconds(0) // ADD WAIT HERE FOR ICE (IN SECONDS)
+                .waitSeconds(8) // ADD WAIT HERE FOR ICE (IN SECONDS)
                 .lineToConstantHeading(new Vector2d(15, 1))
                 .addTemporalMarker(() -> {
                     lift.setPosition(1300);
@@ -83,7 +83,7 @@ public class RedRight extends LinearOpMode {
                 })
                 .waitSeconds(1)
                 .addTemporalMarker( intake::off)
-                .waitSeconds(0) // ADD WAIT HERE FOR ICE (IN SECONDS)
+                .waitSeconds(8) // ADD WAIT HERE FOR ICE (IN SECONDS)
                 .lineToConstantHeading(new Vector2d(15, 1))
                 .addTemporalMarker(() -> {
                     lift.setPosition(1300);
@@ -114,7 +114,7 @@ public class RedRight extends LinearOpMode {
                 })
                 .waitSeconds(1)
                 .addTemporalMarker( intake::off)
-                .waitSeconds(0) // ADD WAIT HERE FOR ICE (IN SECONDS)
+                .waitSeconds(8) // ADD WAIT HERE FOR ICE (IN SECONDS)
                 .lineToConstantHeading(new Vector2d(10, 1))
                 .addTemporalMarker(() -> {
                     lift.setPosition(1300);

@@ -39,7 +39,9 @@ public class TeleOpControl {
             start = false;
         } else if (controller.dpadLeft() && !lift.isUp()) {
             intake.reverse(0.3);
-        } else if (time.milliseconds() < 600 && !start) {
+        } else if (time.milliseconds() < 400 && !start) {
+            intake.on(1);
+        } else if (400 < time.milliseconds() && time.milliseconds() < 1000 && !start) {
             intake.reverse(0.75);
         } else {
             intake.off();
