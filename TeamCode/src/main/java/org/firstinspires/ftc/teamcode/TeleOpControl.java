@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.message.redux.ReceiveGamepadState;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.LinkedList;
 import java.util.Objects;
 
 public class TeleOpControl {
@@ -15,11 +11,7 @@ public class TeleOpControl {
     Lift lift;
     Controller controller;
     Launcher launcher;
-    boolean out;
     boolean start = true;
-    int lastEncoder = 0;
-    LinkedList<Integer> previousEncoders = new LinkedList<Integer>();
-    LinkedList<Integer> currentEncoders = new LinkedList<Integer>();
     boolean lastManual = false;
     public TeleOpControl (Controller controller, HardwareMap hardwareMap) {
         driver = new Drive(hardwareMap);
@@ -27,7 +19,6 @@ public class TeleOpControl {
         lift = new Lift(hardwareMap);
         launcher = new Launcher(hardwareMap);
         this.controller = controller;
-        boolean out = true;
     }
     public void drive () {
         driver.drive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
@@ -81,13 +72,8 @@ public class TeleOpControl {
             lift.manualUp();
             lastManual = true;
         } else if (controller.left_trigger > 0) {
-            if (controller.dpadRight()) {
-                lift.manualDown(true);
-                lastManual = true;
-            } else {
-                lift.manualDown(false);
-                lastManual = true;
-            }
+            lift.manualDown(controller.dpadRight());
+            lastManual = true;
         } else if (lastManual) {
             lift.manualHold();
             lastManual = false;

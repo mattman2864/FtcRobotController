@@ -188,7 +188,7 @@ class Lift {
 
     }
     public void prePosUp () {
-        if (!(Objects.equals(liftState, "moving") || Objects.equals(liftState, "position"))) {
+        if ((Objects.equals(liftState, "manual"))) {
             if (lift.getCurrentPosition() > 3200) {
                 prePos = 2;
             } else {
@@ -258,69 +258,5 @@ class Drive {
         front_right.setPower((y + x + r) * speed);
         rear_left.setPower((y + x - r) * speed);
         rear_right.setPower((y - x + r) * speed);
-    }
-}
-class ObjectDetector {
-
-    boolean USE_WEBCAM;
-    TfodProcessor myTfodProcessor;
-    VisionPortal myVisionPortal;
-    HardwareMap hardwareMap;
-    String modelName;
-    public ObjectDetector (HardwareMap map, String name) {
-        hardwareMap = map;
-        modelName = name;
-    }
-    public void initTfod() {
-        USE_WEBCAM = true;
-        TfodProcessor.Builder myTfodProcessorBuilder;
-        VisionPortal.Builder myVisionPortalBuilder;
-
-        // First, create a TfodProcessor.Builder.
-        myTfodProcessorBuilder = new TfodProcessor.Builder();
-        // Set the name of the file where the model can be found.
-        myTfodProcessorBuilder.setModelFileName(modelName);
-        // Set the full ordered list of labels the model is trained to recognize.
-        myTfodProcessorBuilder.setModelLabels(JavaUtil.createListWith("RedTP", "Object", "BlueTP"));
-        // Set the aspect ratio for the images used when the model was created.
-        myTfodProcessorBuilder.setModelAspectRatio(16 / 9);
-        // Create a TfodProcessor by calling build.
-        myTfodProcessor = myTfodProcessorBuilder.build();
-        // Next, create a VisionPortal.Builder and set attributes related to the camera.
-        myVisionPortalBuilder = new VisionPortal.Builder();
-        if (USE_WEBCAM) {
-            // Use a webcam.
-            myVisionPortalBuilder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        }
-        // Add myTfodProcessor to the VisionPortal.Builder.
-        myVisionPortalBuilder.addProcessor(myTfodProcessor);
-        // Create a VisionPortal by calling build.
-        myVisionPortal = myVisionPortalBuilder.build();
-    }
-    public int get_position() {
-        List<Recognition> myTfodRecognitions;
-        Recognition myTfodRecognition;
-        float x;
-        float y;
-        // Get a list of recognitions from TFOD.
-        myTfodRecognitions = myTfodProcessor.getRecognitions();
-        // Iterate through list and call a function to display info for each recognized object.
-        float xFinal = 0;
-        float confidenceThreshold = 0.6f;
-        for (Recognition myTfodRecognition_item : myTfodRecognitions) {
-            myTfodRecognition = myTfodRecognition_item;
-            // Display position.
-            x = (myTfodRecognition.getLeft() + myTfodRecognition.getRight()) / 2;
-            y = (myTfodRecognition.getTop() + myTfodRecognition.getBottom()) / 2;
-            if (myTfodRecognition_item.getConfidence() > confidenceThreshold) {
-                xFinal = x;
-            }
-        }
-        if (xFinal > 300) {
-            return 2;
-        } else if (myTfodRecognitions.size() > 0) {
-            return 1;
-        }
-        return 0;
     }
 }
