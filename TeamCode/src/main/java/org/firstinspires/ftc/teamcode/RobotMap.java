@@ -4,9 +4,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class RobotMap {
-    static HardwareMap hardwareMap;
-    public RobotMap(HardwareMap map) {
-        hardwareMap = map;
+    public static class Drivetrain {
+        public static String frontLeft = "frontLeft";
+        public static String frontRight = "frontRight";
+        public static String rearLeft = "rearLeft";
+        public static String rearRight = "rearRight";
+        public static double speed = 1.0;
     }
-    static DcMotor motor1 = hardwareMap.get(DcMotor.class, "a");
 }
