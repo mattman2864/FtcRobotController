@@ -15,7 +15,8 @@ public class Drive extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            robot.drivetrain.tankDrive(controller.left_stick_y, controller.right_stick_y);
+            controller.update();
+            robot.drivetrain.joystickDrive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
         }
 
     }

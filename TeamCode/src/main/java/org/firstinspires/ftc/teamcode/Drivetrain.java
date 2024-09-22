@@ -1,21 +1,33 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Drivetrain {
     HardwareMap hardwareMap;
+    DcMotor frontLeft;
+    DcMotor frontRight;
+    DcMotor rearLeft;
+    DcMotor rearRight;
+
     public Drivetrain(HardwareMap map) {
         hardwareMap = map;
+        frontLeft = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.frontLeft);
+        frontRight = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.frontRight);
+        rearLeft = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.rearLeft);
+        rearRight = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.rearRight);
+
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public DcMotor frontLeft = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.frontLeft);
-    public DcMotor frontRight = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.frontRight);
-    public DcMotor rearLeft = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.rearLeft);
-    public DcMotor rearRight = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.rearRight);
-
     public void mecanumDrive(double theta, double power, double turn) {
-
         // Finding components of desired vector
         double sin = Math.sin(theta - Math.PI/4);
         double cos = Math.cos(theta - Math.PI/4);
