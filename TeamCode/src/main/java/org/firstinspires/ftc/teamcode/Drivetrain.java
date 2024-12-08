@@ -33,18 +33,22 @@ public class Drivetrain {
         double cos = Math.cos(theta - Math.PI/4);
         double max = Math.max(Math.abs(sin), Math.abs(cos));
 
-        // Calculating power for each motor based on desired vector
+        // Calculating power for each motor based o/home/matt/StudioProjects/WafflesRC/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Testingn desired vector
         double fl = power * cos/max + turn;
         double fr = power * sin/max - turn;
         double rl = power * sin/max + turn;
         double rr = power * cos/max - turn;
 
         // Normalizing motor powers so that the maximum is no greater than 1
-        if ((power + Math.abs(turn)) > 1) {
+        if ((power + Math.abs(turn)) > RobotMap.Drivetrain.speed) {
             fl /= power + turn;
+            fl *= RobotMap.Drivetrain.speed;
             fr /= power + turn;
+            fr *= RobotMap.Drivetrain.speed;
             rl /= power + turn;
+            rl *= RobotMap.Drivetrain.speed;
             rr /= power + turn;
+            rr *= RobotMap.Drivetrain.speed;
         }
 
         // Applying calculated power to motors
@@ -55,7 +59,6 @@ public class Drivetrain {
     }
 
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX) {
-
         // joystick y axis is reversed, where up is + and down is -
         double theta = Math.atan2(-leftStickY, leftStickX);
         double power = Math.hypot(leftStickX, -leftStickY);

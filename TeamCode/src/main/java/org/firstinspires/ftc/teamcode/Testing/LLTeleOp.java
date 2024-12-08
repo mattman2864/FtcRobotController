@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Testing;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -26,10 +26,10 @@ public class LLTeleOp extends LinearOpMode {
             LLResult result = limelight.getLatestResult();
             if (result != null) {
                 if (result.isValid()) {
-                    Pose3D botpose = result.getBotpose();
+                    Pose3D botPose = result.getBotpose();
                     telemetry.addData("tx", result.getTx());
                     telemetry.addData("ty", result.getTy());
-                    telemetry.addData("Botpose", botpose.toString());
+                    telemetry.addData("Bot Pose", botPose.toString());
                     telemetry.update();
                 }
             }
