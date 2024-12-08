@@ -5,21 +5,27 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp (name="Main")
 public class TeleOpMain extends LinearOpMode {
+
     Robot robot;
     Controller controller;
+
     @Override
     public void runOpMode() {
+
         robot = new Robot(hardwareMap);
         controller = new Controller(gamepad1);
 
         waitForStart();
-        if (opModeIsActive()) {
+
+        if (opModeIsActive()) { //Is this line necessary?
             while (opModeIsActive()) {
+
                 if (gamepad1.a) {
                     robot.lift.home();
                 } else if (gamepad1.b) {
                     robot.lift.intake();
                 }
+
                 robot.lift.update();
                 telemetry.update();
             }
