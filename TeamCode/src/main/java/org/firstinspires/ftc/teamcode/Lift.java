@@ -41,8 +41,8 @@ public class Lift {
         flipRight = hardwareMap.get(Servo.class, Config.Arm.flipRight);
         flipLeft = hardwareMap.get(Servo.class, Config.Arm.flipLeft);
 
-        rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rotator.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -68,7 +68,6 @@ public class Lift {
     }
     public void setMode(Mode mode) {
         this.mode = mode;
-
     }
     void update() {
         // MANAGE STATE

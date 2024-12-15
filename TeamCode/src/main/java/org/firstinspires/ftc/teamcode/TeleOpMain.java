@@ -9,10 +9,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class TeleOpMain extends LinearOpMode {
     Robot robot;
     Controller controller;
+
+
     @Override
     public void runOpMode() {
         robot = new Robot(hardwareMap);
         controller = new Controller(gamepad1);
+
+
 
         waitForStart();
         if (opModeIsActive()) {
