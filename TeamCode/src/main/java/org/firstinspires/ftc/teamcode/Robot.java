@@ -9,4 +9,7 @@ public class Robot {
         drivetrain = new Drivetrain(hardwareMap);
         lift = new Lift(hardwareMap);
     }
+    public void update() {
+        lift.update();
+    }
 }

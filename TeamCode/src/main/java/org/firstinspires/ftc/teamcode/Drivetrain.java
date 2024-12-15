@@ -13,10 +13,10 @@ public class Drivetrain {
 
     public Drivetrain(HardwareMap map) {
         hardwareMap = map;
-        frontLeft = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.frontLeft);
-        frontRight = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.frontRight);
-        rearLeft = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.rearLeft);
-        rearRight = hardwareMap.get(DcMotor.class, RobotMap.Drivetrain.rearRight);
+        frontLeft = hardwareMap.get(DcMotor.class, Config.Drivetrain.frontLeft);
+        frontRight = hardwareMap.get(DcMotor.class, Config.Drivetrain.frontRight);
+        rearLeft = hardwareMap.get(DcMotor.class, Config.Drivetrain.rearLeft);
+        rearRight = hardwareMap.get(DcMotor.class, Config.Drivetrain.rearRight);
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -40,15 +40,15 @@ public class Drivetrain {
         double rr = power * cos/max - turn;
 
         // Normalizing motor powers so that the maximum is no greater than 1
-        if ((power + Math.abs(turn)) > RobotMap.Drivetrain.speed) {
+        if ((power + Math.abs(turn)) > Config.Drivetrain.speed) {
             fl /= power + turn;
-            fl *= RobotMap.Drivetrain.speed;
+            fl *= Config.Drivetrain.speed;
             fr /= power + turn;
-            fr *= RobotMap.Drivetrain.speed;
+            fr *= Config.Drivetrain.speed;
             rl /= power + turn;
-            rl *= RobotMap.Drivetrain.speed;
+            rl *= Config.Drivetrain.speed;
             rr /= power + turn;
-            rr *= RobotMap.Drivetrain.speed;
+            rr *= Config.Drivetrain.speed;
         }
 
         // Applying calculated power to motors

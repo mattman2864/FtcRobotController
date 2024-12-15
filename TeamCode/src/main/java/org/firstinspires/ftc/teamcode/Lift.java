@@ -7,85 +7,108 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Lift {
     HardwareMap hardwareMap;
-    DcMotor arm;
+    DcMotor rotator;
     DcMotor lift;
-    enum states {
-        HOME,
-        INTAKE,
-        OUTTAKE
-    }
-    states state = states.HOME;
-    int targetArm = 0;
+    Servo flipRight;
+    Servo flipLeft;
+    int targetRotator = 0;
     int targetLift = 0;
-    BasicPID armController;
+    BasicPID rotatorController;
     BasicPID liftController;
+    enum State {
+        OUT,
+        IN
+    }
+    enum Mode {
+        HOME,
+        PICKUP,
+        HIGH_BASKET,
+        LOW_BASKET
+    }
+    State state = State.IN;
+    Mode mode = Mode.HOME;
+    int startingRotation = 0;
+    int startingLift = 0;
 
     public Lift (HardwareMap map) {
         hardwareMap = map;
-        arm = hardwareMap.get(DcMotor.class, RobotMap.Lift.arm);
-        lift = hardwareMap.get(DcMotor.class, RobotMap.Lift.lift);
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        arm.setDirection(DcMotorSimple.Direction.REVERSE);
-        lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        rotator = hardwareMap.get(DcMotor.class, Config.Rotator.rotator);
+        lift = hardwareMap.get(DcMotor.class, Config.Lift.lift);
+        flipRight = hardwareMap.get(Servo.class, Config.Arm.flipRight);
+        flipLeft = hardwareMap.get(Servo.class, Config.Arm.flipLeft);
 
-        PIDCoefficients armCoefficients = new PIDCoefficients(0.01, 0, 0.01);
-        armController = new BasicPID(armCoefficients);
+        rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rotator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rotator.setDirection(DcMotorSimple.Direction.REVERSE);
+        lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        flipLeft.setDirection(Servo.Direction.REVERSE);
+
+        PIDCoefficients rotatorCoefficients = new PIDCoefficients(0.01, 0, 0.01);
+        rotatorController = new BasicPID(rotatorCoefficients);
 
         PIDCoefficients liftCoefficients = new PIDCoefficients(0.01, 0, 0.01);
         liftController = new BasicPID(liftCoefficients);
     }
-    // retract lift
-    // rotate lift
-    // extend lift
-    private double angleMap(double angle) {
-        return angle * -28;
+    void setRotatorTarget(int target) {
+        startingRotation = rotator.getCurrentPosition();
+        targetRotator = clamp(target, Config.Rotator.rotatorMin, Config.Rotator.rotatorMax);
     }
-    private void setArmTarget(int armPos) {
-        targetArm = clamp(armPos, RobotMap.Lift.armMin, RobotMap.Lift.armMax);
+    void setLiftTarget(int target) {
+        targetLift = clamp(target, Config.Lift.liftMin, Config.Lift.liftMax);
     }
-    private void setLiftTarget(int liftPos) {
-        targetLift = clamp(liftPos, RobotMap.Lift.liftMin, RobotMap.Lift.liftMax);
+    void setFlip(double val){
+        flipRight.setPosition(val);
+        flipLeft.setPosition(val);
     }
-    public void update() {
-        arm.setPower(armController.calculate(targetArm, arm.getCurrentPosition()));
-        lift.setPower(liftController.calculate(targetLift, lift.getCurrentPosition()));
-        switch (state) {
+    public void setMode(Mode mode) {
+        this.mode = mode;
+
+    }
+    void update() {
+        // MANAGE STATE
+        switch (mode) {
             case HOME:
-                setLiftTarget(RobotMap.Lift.liftMin);
-                if (isAtPosition(lift, RobotMap.Lift.liftMin)) {
-                    setArmTarget(RobotMap.Lift.liftMin);
-                }
+                setFlip(0);
+                setLiftTarget(10);
+                setRotatorTarget(0);
                 break;
-            case INTAKE:
-                if (!isAtPosition(arm, RobotMap.Lift.armIntake)) {
-                    if (!isAtPosition(lift, RobotMap.Lift.liftMin)) {
-                        setLiftTarget(RobotMap.Lift.liftMin);
-                        break;
-                    }
-                    setArmTarget(RobotMap.Lift.armIntake);
-                }
-                else if (!isAtPosition(lift, RobotMap.Lift.liftIntake)) {
-                    setLiftTarget(RobotMap.Lift.liftIntake);
-                }
+            case PICKUP:
+                setFlip(0.85);
+                setLiftTarget(2000);
+                setRotatorTarget(0);
                 break;
+            case HIGH_BASKET:
+                setFlip(0.5);
+                setLiftTarget(3000);
+                setRotatorTarget(3500);
+                break;
+            case LOW_BASKET:
+                setFlip(0.5);
+                setLiftTarget(1200);
+                setRotatorTarget(3500);
         }
-    }
-    public void home() {
-        state = states.HOME;
-    }
-    public void intake() {
-        state = states.INTAKE;
-    }
-    public void outtake() {
-        state = states.OUTTAKE;
-    }
-    private boolean isAtPosition(DcMotor motor, int position) {
-        return Math.abs(motor.getCurrentPosition() - position) < 10;
+
+        // UPDATE POSITION
+        // LIFT
+//        if ((float) (Math.abs(rotator.getCurrentPosition() - startingRotation)) / (float) (Math.abs(targetRotator - startingRotation + 1)) > 0.5 ||
+//                     Math.abs(rotator.getCurrentPosition() - startingRotation) < 100) {
+            lift.setPower(liftController.calculate(targetLift, lift.getCurrentPosition()));
+//        } else {
+//            lift.setPower(liftController.calculate(10, lift.getCurrentPosition()));
+//        }
+
+        // ROTATOR
+//        if (Math.abs(lift.getCurrentPosition() / (targetLift + 1)) < 0.5 || lift.getCurrentPosition() < 500 ||
+//            (float) (Math.abs(rotator.getCurrentPosition() - startingRotation)) / (float) (Math.abs(targetRotator - startingRotation + 1)) > 0.5) {
+            rotator.setPower(rotatorController.calculate(targetRotator, rotator.getCurrentPosition()));
+//        } else {
+//            rotator.setPower(rotatorController.calculate(rotator.getCurrentPosition(), rotator.getCurrentPosition()));
+//        }
     }
 }
