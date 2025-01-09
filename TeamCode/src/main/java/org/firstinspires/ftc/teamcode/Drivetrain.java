@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 public class Drivetrain {
     HardwareMap hardwareMap;
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor rearLeft;
     DcMotor rearRight;
-
     public Drivetrain(HardwareMap map) {
         hardwareMap = map;
         frontLeft = hardwareMap.get(DcMotor.class, Config.Drivetrain.frontLeft);
@@ -26,7 +23,6 @@ public class Drivetrain {
         rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-
     public void mecanumDrive(double theta, double power, double turn) {
         // Finding components of desired vector
         double sin = Math.sin(theta - Math.PI/4);

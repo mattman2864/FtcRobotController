@@ -25,4 +25,11 @@ public class Config {
         public static String flipLeft = "flipLeft";
         public static String flipRight = "flipRight";
     }
+
+    public static class Intake {
+        public static String wrist = "wrist";
+        public static String intakeLeft = "intakeLeft";
+        public static String intakeRight = "intakeRight";
+        public static String color = "color";
+    }
 }

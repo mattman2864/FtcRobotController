@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Util;
 
 public class WafflesUtil {
-    public static int clamp(int val, int min, int max) {
+    public static double clamp(double val, double min, double max) {
         return Math.max(min, Math.min(val, max));
     }
 }
