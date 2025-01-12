@@ -15,7 +15,7 @@ class Controller {
     private int dpad_up, dpad_down, dpad_left, dpad_right;
     private int x, y, a, b;
     private int left_bumper, right_bumper;
-    // These will simply pass the value from the gamepad object out through the org.firstinspires.ftc.teamcode.Controller object
+    // These will simply pass the value from the gamepad object out through the Controller object
     public double left_stick_x, right_stick_x, left_stick_y, right_stick_y;
     public double left_trigger, right_trigger;
     // [TBD]

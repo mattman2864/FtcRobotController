@@ -23,17 +23,10 @@ android {
     }
 }
 
-repositories {
-    maven {
-        url = 'https://maven.brott.dev/'
-    }
-    maven {
-        url = 'https://repo.dairy.foundation/releases'
-    }
-}
-android.buildFeatures.buildConfig = true
-
 dependencies {
     implementation project(':FtcRobotController')
-    implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
+    annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
 }
