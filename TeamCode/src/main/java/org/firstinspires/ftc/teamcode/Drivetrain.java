@@ -12,6 +12,7 @@ public class Drivetrain {
     DcMotor frontRight;
     DcMotor rearLeft;
     DcMotor rearRight;
+    double speed;
     public Drivetrain(HardwareMap map) {
         hardwareMap = map;
         frontLeft = hardwareMap.get(DcMotor.class, Config.Drivetrain.frontLeft);
@@ -26,8 +27,12 @@ public class Drivetrain {
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        speed = 1;
     }
-    public void mecanumDrive(double theta, double power, double turn) {
+    public void setSpeed(double newSpeed) {
+        this.speed = newSpeed;
+    }
+    public void mecanumDrive(double theta, double power, double turn, double speed) {
         // Finding components of desired vector
         double sin = Math.sin(theta - Math.PI/4);
         double cos = Math.cos(theta - Math.PI/4);
@@ -40,15 +45,15 @@ public class Drivetrain {
         double rr = power * cos/max - turn;
 
         // Normalizing motor powers so that the maximum is no greater than 1
-        if ((power + Math.abs(turn)) > Config.Drivetrain.speed) {
+        if ((power + Math.abs(turn)) > speed) {
             fl /= power + turn;
-            fl *= Config.Drivetrain.speed;
+            fl *= speed;
             fr /= power + turn;
-            fr *= Config.Drivetrain.speed;
+            fr *= speed;
             rl /= power + turn;
-            rl *= Config.Drivetrain.speed;
+            rl *= speed;
             rr /= power + turn;
-            rr *= Config.Drivetrain.speed;
+            rr *= speed;
         }
 
         // Applying calculated power to motors
@@ -62,7 +67,7 @@ public class Drivetrain {
         // joystick y axis is reversed, where up is + and down is -
         double theta = Math.atan2(-leftStickY, leftStickX);
         double power = Math.hypot(leftStickX, -leftStickY);
-        this.mecanumDrive(theta, power, rightStickX);
+        this.mecanumDrive(theta, power, rightStickX, speed);
     }
 
     public void tankDrive(double leftStickY, double rightStickY) {

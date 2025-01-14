@@ -42,6 +42,10 @@ public class TeleOpMain extends LinearOpMode {
                         lift.setMode(Lift.Mode.REAR_PICKUP);
                     }
                 }
+
+                if (lift.mode == Lift.Mode.HOME) drive.setSpeed(1);
+                else drive.setSpeed(0.4);
+
                 // Intake
                 lift.intake(controller.right_trigger - controller.left_trigger);
 

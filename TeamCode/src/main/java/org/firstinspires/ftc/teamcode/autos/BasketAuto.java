@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 @Autonomous(name = "Basket")
 public class BasketAuto extends OpMode {
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
-    private final Pose lift = new Pose(15, 9, 5.75);
-    private final Pose outtake = new Pose(4.75, 16.9, 5.5);
+    private final Pose lift = new Pose(5, 5, 5.75);
+    private final Pose outtake = new Pose(6, 18, 5.5);
     private final Pose firstPickup = new Pose(18, 12, 3);
     private final Pose secondPickup = new Pose(18, 20, 3.07);
     private final Pose parkOnBar = new Pose(36.75, -9.23, 1.457);
@@ -39,27 +39,71 @@ public class BasketAuto extends OpMode {
                 new BezierLine(new Point(startPose), new Point(lift))
         );
         alignLift.setLinearHeadingInterpolation(startPose.getHeading(), lift.getHeading());
+
         dropoff1 = new Path(
                 new BezierLine(new Point(lift), new Point(outtake))
         );
-        alignLift.setLinearHeadingInterpolation(lift.getHeading(), outtake.getHeading());
+        dropoff1.setLinearHeadingInterpolation(lift.getHeading(), outtake.getHeading());
+
+        pickup1 = new Path(
+                new BezierLine(new Point(outtake), new Point(firstPickup))
+        );
+        pickup1.setLinearHeadingInterpolation(outtake.getHeading(), firstPickup.getHeading());
+
+        dropoff2 = new Path(
+                new BezierLine(new Point(firstPickup), new Point(outtake))
+        );
+        dropoff2.setLinearHeadingInterpolation(firstPickup.getHeading(), outtake.getHeading());
+
+        pickup2 = new Path(
+                new BezierLine(new Point(outtake), new Point(secondPickup))
+        );
+        pickup2.setLinearHeadingInterpolation(outtake.getHeading(), secondPickup.getHeading());
+
+        dropoff3 = new Path(
+                new BezierLine(new Point(secondPickup), new Point(outtake))
+        );
+        dropoff3.setLinearHeadingInterpolation(secondPickup.getHeading(), outtake.getHeading());
+
+        park = new Path(
+                new BezierLine(new Point(outtake), new Point(parkOnBar))
+        );
+        park.setLinearHeadingInterpolation(outtake.getHeading(), parkOnBar.getHeading());
+
     }
     public void autoStateUpdate() {
         switch (pathState) {
             case 0:
                 follower.followPath(alignLift);
                 setPathState(1);
+                robotLift.setMode(Lift.Mode.HIGH_BASKET);
                 break;
-            case 1:
-                if (calculatePoseError(follower.getPose(), lift) < 10) {
-                    robotLift.setMode(Lift.Mode.HIGH_BASKET);
-                    setPathState(2);
-                }
-                break;
-            case 2:
-                follower.followPath(dropoff1);
-                setPathState(-1);
-                break;
+//            case 1:
+//                if (pathTimer.getElapsedTime() > 5000) {
+//                    follower.followPath(dropoff1);
+//                    setPathState(2);
+//                }
+//                break;
+//            case 2:
+//                if (calculatePoseError(follower.getPose(), outtake) < 1) {
+//                    robotLift.intake(-1);
+//                    pathTimer.resetTimer();
+//                    setPathState(3);
+//                }
+//                break;
+//            case 4:
+//                if (pathTimer.getElapsedTime() > 1000) {
+//                    robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
+//                    follower.followPath(pickup1);
+//                    setPathState(5);
+//                }
+//                break;
+//            case 5:
+//                if (calculatePoseError(follower.getPose(), firstPickup) < 1 && pathTimer.getElapsedTime() > 5000) {
+//                    setPathState(-1);
+//                }
+//                break;
+
         }
     }
     public void setPathState(int pState) {

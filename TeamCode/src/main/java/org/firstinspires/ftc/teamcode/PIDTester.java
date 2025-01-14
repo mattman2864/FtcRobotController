@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @TeleOp(name = "PID Tester")
 public class PIDTester extends LinearOpMode {
     DcMotor arm;
+    DcMotor rotator;
     BasicPID armController;
 
     FtcDashboard dash;
@@ -30,6 +31,8 @@ public class PIDTester extends LinearOpMode {
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armController = new BasicPID(armCoefficients);
         target = 700;
+        rotator = hardwareMap.get(DcMotor.class, "rotator");
+
 
         dash = FtcDashboard.getInstance();
         Telemetry dashboard = dash.getTelemetry();
@@ -37,13 +40,14 @@ public class PIDTester extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()) {
-            if (controller.A()) target = 300;
-            else target = 700;
+            if (controller.A()) target = 600;
+            else target = 1400;
 
             arm.setPower(armController.calculate(target, arm.getCurrentPosition()));
             dashboard.addData("position", arm.getCurrentPosition());
             dashboard.addData("target", target);
             dashboard.update();
+            controller.update();
         }
     }
 }
