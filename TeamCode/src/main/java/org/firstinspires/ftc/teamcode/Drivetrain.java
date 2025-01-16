@@ -27,7 +27,7 @@ public class Drivetrain {
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        speed = 1;
+        speed = Config.Drivetrain.speed;
     }
     public void setSpeed(double newSpeed) {
         this.speed = newSpeed;
@@ -38,7 +38,7 @@ public class Drivetrain {
         double cos = Math.cos(theta - Math.PI/4);
         double max = Math.max(Math.abs(sin), Math.abs(cos));
 
-        // Calculating power for each motor based o/home/matt/StudioProjects/WafflesRC/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Testingn desired vector
+        // Calculating power for each motor based on desired vector
         double fl = power * cos/max + turn;
         double fr = power * sin/max - turn;
         double rl = power * sin/max + turn;

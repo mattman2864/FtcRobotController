@@ -64,8 +64,6 @@ public class Lift {
         flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         flipper.setPower(0.8);
 
-//        mag1 = hardwareMap.get(DigitalChannel.class, "mag1");
-
     }
     private void setRotatorTarget(int target) {
         targetRotator = (int)clamp(target, Config.Rotator.rotatorMin, Config.Rotator.rotatorMax);
@@ -121,33 +119,29 @@ public class Lift {
                 break;
             case HIGH_BASKET:
                 setFlipTarget(1000);
-                setLiftTarget(4300);
+                setLiftTarget(4500);
                 setRotatorTarget(2847);
                 targetWrist = 1;
                 break;
             case LOW_BASKET:
                 setFlipTarget(1200);
-                setLiftTarget(1750);
+                setLiftTarget(2500);
                 setRotatorTarget(3000);
                 targetWrist = 1;
         }
         if (Math.abs(rotator.getCurrentPosition() - targetRotator) > 100) {
-            flipper.setTargetPosition(0);
+            if (mode == Mode.HOME) {
+                flipper.setTargetPosition(targetFlip);
+            }
             lift.setTargetPosition(targetLift);
             wrist.setPosition(0);
-            if (Math.abs(flipper.getCurrentPosition()) < 20 && Math.abs(lift.getCurrentPosition()) < 20) {
+            if (Math.abs(lift.getCurrentPosition()) < 20) {
                 rotator.setTargetPosition(targetRotator);
             }
         } else {
-            flipper.setTargetPosition(targetLift);
+            lift.setTargetPosition(targetLift);
             flipper.setTargetPosition(targetFlip);
             wrist.setPosition(targetWrist);
         }
-
-//        if (!mag1.getState()) {
-//            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        }
-
     }
 }

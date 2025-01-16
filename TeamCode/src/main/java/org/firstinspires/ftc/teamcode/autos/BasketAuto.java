@@ -18,16 +18,17 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 @Autonomous(name = "Basket")
 public class BasketAuto extends OpMode {
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
-    private final Pose lift = new Pose(5, 5, 5.75);
-    private final Pose outtake = new Pose(6, 18, 5.5);
-    private final Pose firstPickup = new Pose(18, 12, 3);
-    private final Pose secondPickup = new Pose(18, 20, 3.07);
-    private final Pose parkOnBar = new Pose(36.75, -9.23, 1.457);
+    private final Pose lift = new Pose(8, 11, Math.toRadians(-45));
+    private final Pose outtake = new Pose(5, 19, Math.toRadians(-45));
+    private final Pose firstPickup = new Pose(21, 17, Math.toRadians(180));
+    private final Pose secondPickup = new Pose(21, 25, Math.toRadians(180));
+    private final Pose parkOnBar = new Pose(38.9, -9, Math.toRadians(90));
     private Timer pathTimer, actionTimer, opmodeTimer;
     int pathState = 0;
     Follower follower;
     Path alignLift;
     Path dropoff1;
+    Path backup;
     Path pickup1;
     Path dropoff2;
     Path pickup2;
@@ -44,6 +45,11 @@ public class BasketAuto extends OpMode {
                 new BezierLine(new Point(lift), new Point(outtake))
         );
         dropoff1.setLinearHeadingInterpolation(lift.getHeading(), outtake.getHeading());
+
+        backup = new Path(
+                new BezierLine(new Point(outtake), new Point(lift))
+        );
+        backup.setLinearHeadingInterpolation(outtake.getHeading(), lift.getHeading());
 
         pickup1 = new Path(
                 new BezierLine(new Point(outtake), new Point(firstPickup))
@@ -69,7 +75,6 @@ public class BasketAuto extends OpMode {
                 new BezierLine(new Point(outtake), new Point(parkOnBar))
         );
         park.setLinearHeadingInterpolation(outtake.getHeading(), parkOnBar.getHeading());
-
     }
     public void autoStateUpdate() {
         switch (pathState) {
@@ -78,32 +83,46 @@ public class BasketAuto extends OpMode {
                 setPathState(1);
                 robotLift.setMode(Lift.Mode.HIGH_BASKET);
                 break;
-//            case 1:
-//                if (pathTimer.getElapsedTime() > 5000) {
-//                    follower.followPath(dropoff1);
-//                    setPathState(2);
-//                }
-//                break;
-//            case 2:
-//                if (calculatePoseError(follower.getPose(), outtake) < 1) {
-//                    robotLift.intake(-1);
-//                    pathTimer.resetTimer();
-//                    setPathState(3);
-//                }
-//                break;
-//            case 4:
-//                if (pathTimer.getElapsedTime() > 1000) {
-//                    robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
-//                    follower.followPath(pickup1);
-//                    setPathState(5);
-//                }
-//                break;
-//            case 5:
-//                if (calculatePoseError(follower.getPose(), firstPickup) < 1 && pathTimer.getElapsedTime() > 5000) {
-//                    setPathState(-1);
-//                }
-//                break;
-
+            case 1:
+                if (pathTimer.getElapsedTime() > 4000) {
+                    follower.followPath(dropoff1);
+                    setPathState(2);
+                }
+                break;
+            case 2:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    robotLift.intake(-1);
+                    setPathState(3);
+                }
+                break;
+            case 3:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(backup);
+                    robotLift.intake(0);
+                    setPathState(4);
+                }
+                break;
+            case 4:
+                if (pathTimer.getElapsedTime() > 1000) {
+                    robotLift.setMode(Lift.Mode.HOME);
+                    setPathState(5);
+                }
+                break;
+            case 5:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
+                    robotLift.intake(1);
+                    follower.followPath(pickup1);
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    robotLift.intake(0);
+                    robotLift.setMode(Lift.Mode.HOME);
+                    setPathState(-1);
+                }
+                break;
         }
     }
     public void setPathState(int pState) {
