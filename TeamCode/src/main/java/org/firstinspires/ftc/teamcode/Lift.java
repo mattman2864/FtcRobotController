@@ -92,28 +92,28 @@ public class Lift {
                 targetWrist = 0;
                 break;
             case FRONT_PICKUP:
-                setFlipTarget(1480);
-                setLiftTarget(500);
+                setFlipTarget(1360);
+                setLiftTarget(1100);
                 setRotatorTarget(0);
                 targetWrist = 0;
                 break;
             case FRONT_PICKUP_DROP:
-                setFlipTarget(1600);
-                setLiftTarget(500);
+                setFlipTarget(1550);
+                setLiftTarget(1100);
                 setRotatorTarget(0);
                 targetWrist = 0.05;
                 intake(1);
                 break;
             case REAR_PICKUP:
-                setFlipTarget(160);
-                setLiftTarget(500);
-                setRotatorTarget(3500);
+                setFlipTarget(110);
+                setLiftTarget(250);
+                setRotatorTarget(3000);
                 targetWrist = 0.68;
                 break;
             case REAR_PICKUP_DROP:
-                setFlipTarget(160);
-                setLiftTarget(10);
-                setRotatorTarget(3500);
+                setFlipTarget(110);
+                setLiftTarget(0);
+                setRotatorTarget(3000);
                 targetWrist = 0.68;
                 intake(1);
                 break;
@@ -126,7 +126,7 @@ public class Lift {
             case LOW_BASKET:
                 setFlipTarget(1200);
                 setLiftTarget(2500);
-                setRotatorTarget(3000);
+                setRotatorTarget(2847);
                 targetWrist = 1;
         }
         if (Math.abs(rotator.getCurrentPosition() - targetRotator) > 100) {

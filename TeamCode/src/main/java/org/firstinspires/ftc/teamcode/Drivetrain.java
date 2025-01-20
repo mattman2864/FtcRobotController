@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-;
-
 public class Drivetrain {
     HardwareMap hardwareMap;
     DcMotor frontLeft;
@@ -32,49 +30,29 @@ public class Drivetrain {
     public void setSpeed(double newSpeed) {
         this.speed = newSpeed;
     }
-    public void mecanumDrive(double theta, double power, double turn, double speed) {
-        // Finding components of desired vector
-        double sin = Math.sin(theta - Math.PI/4);
-        double cos = Math.cos(theta - Math.PI/4);
-        double max = Math.max(Math.abs(sin), Math.abs(cos));
 
-        // Calculating power for each motor based on desired vector
-        double fl = power * cos/max + turn;
-        double fr = power * sin/max - turn;
-        double rl = power * sin/max + turn;
-        double rr = power * cos/max - turn;
+    public void joystickDrive(double leftStickX, double leftStickY, double rightStickX) {
+        // joystick y axis is reversed, where up is + and down is -
+        double y = -leftStickY;
+        double x = leftStickX * 1.1; // Counter imperfect strafing
+        double rx = rightStickX;
 
-        // Normalizing motor powers so that the maximum is no greater than 1
-        if ((power + Math.abs(turn)) > speed) {
-            fl /= power + turn;
-            fl *= speed;
-            fr /= power + turn;
-            fr *= speed;
-            rl /= power + turn;
-            rl *= speed;
-            rr /= power + turn;
-            rr *= speed;
-        }
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double fl = (y + x + rx) / denominator;
+        double rl = (y - x + rx) / denominator;
+        double fr = (y - x - rx) / denominator;
+        double rr = (y + x - rx) / denominator;
+
+        // Applying speed
+        fl *= speed;
+        rl *= speed;
+        fr *= speed;
+        rr *= speed;
 
         // Applying calculated power to motors
         this.frontLeft.setPower(fl);
         this.frontRight.setPower(fr);
         this.rearLeft.setPower(rl);
         this.rearRight.setPower(rr);
-    }
-
-    public void joystickDrive(double leftStickX, double leftStickY, double rightStickX) {
-        // joystick y axis is reversed, where up is + and down is -
-        double theta = Math.atan2(-leftStickY, leftStickX);
-        double power = Math.hypot(leftStickX, -leftStickY);
-        this.mecanumDrive(theta, power, rightStickX, speed);
-    }
-
-    public void tankDrive(double leftStickY, double rightStickY) {
-        // Basic tank drive for wheelie bot
-        this.frontLeft.setPower(-leftStickY);
-        this.rearLeft.setPower(-leftStickY);
-        this.frontRight.setPower(-rightStickY);
-        this.rearRight.setPower(-rightStickY);
     }
 }
