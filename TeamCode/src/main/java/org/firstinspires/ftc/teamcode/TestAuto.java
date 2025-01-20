@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.localization.constants.OTOSConstants;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;
@@ -43,5 +44,8 @@ public class TestAuto extends OpMode {
     public void loop() {
         follower.update();
         autonomousPathUpdate();
+
+        telemetry.addData("scalar", OTOSConstants.linearScalar);
+        telemetry.update();
     }
 }
