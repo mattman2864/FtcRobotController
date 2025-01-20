@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 public class TestAuto extends OpMode {
     // Set Up Poses
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
-    private final Pose endPose = new Pose(10, 10, Math.toRadians(90));
+    private final Pose endPose = new Pose(24, 24, Math.toRadians(180));
     int pathState = 0;
     Follower follower;
     Path testpath;
