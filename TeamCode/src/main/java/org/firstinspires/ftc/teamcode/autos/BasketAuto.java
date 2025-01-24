@@ -19,10 +19,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 public class BasketAuto extends OpMode {
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
     private final Pose lift = new Pose(8, 11, Math.toRadians(-45));
-    private final Pose outtake = new Pose(5, 19, Math.toRadians(-45));
-    private final Pose firstPickup = new Pose(21, 17, Math.toRadians(180));
-    private final Pose secondPickup = new Pose(21, 25, Math.toRadians(180));
-    private final Pose parkOnBar = new Pose(38.9, -9, Math.toRadians(90));
+    private final Pose outtake = new Pose(8.5, 16.5, Math.toRadians(-45));
+    private final Pose outtake2 = new Pose(10, 22, Math.toRadians(-45));
+    private final Pose outtake3 = new Pose(10, 23.5, Math.toRadians(-45));
+    private final Pose firstPickup = new Pose(22, 15, Math.toRadians(180));
+    private final Pose secondPickup = new Pose(22, 21, Math.toRadians(180));
+    private final Pose parkLineup = new Pose(53, 15, Math.toRadians(90));
+    private final Pose parkOnBar = new Pose(53, -9, Math.toRadians(90));
     private Timer pathTimer, actionTimer, opmodeTimer;
     int pathState = 0;
     Follower follower;
@@ -33,6 +36,7 @@ public class BasketAuto extends OpMode {
     Path dropoff2;
     Path pickup2;
     Path dropoff3;
+    Path prepark;
     Path park;
     Lift robotLift;
     public void buildPaths() {
@@ -52,29 +56,34 @@ public class BasketAuto extends OpMode {
         backup.setLinearHeadingInterpolation(outtake.getHeading(), lift.getHeading());
 
         pickup1 = new Path(
-                new BezierLine(new Point(outtake), new Point(firstPickup))
+                new BezierLine(new Point(lift), new Point(firstPickup))
         );
-        pickup1.setLinearHeadingInterpolation(outtake.getHeading(), firstPickup.getHeading());
+        pickup1.setLinearHeadingInterpolation(lift.getHeading(), firstPickup.getHeading());
 
         dropoff2 = new Path(
-                new BezierLine(new Point(firstPickup), new Point(outtake))
+                new BezierLine(new Point(firstPickup), new Point(outtake2))
         );
-        dropoff2.setLinearHeadingInterpolation(firstPickup.getHeading(), outtake.getHeading());
+        dropoff2.setLinearHeadingInterpolation(firstPickup.getHeading(), outtake2.getHeading());
 
         pickup2 = new Path(
-                new BezierLine(new Point(outtake), new Point(secondPickup))
+                new BezierLine(new Point(lift), new Point(secondPickup))
         );
-        pickup2.setLinearHeadingInterpolation(outtake.getHeading(), secondPickup.getHeading());
+        pickup2.setLinearHeadingInterpolation(lift.getHeading(), secondPickup.getHeading());
 
         dropoff3 = new Path(
-                new BezierLine(new Point(secondPickup), new Point(outtake))
+                new BezierLine(new Point(secondPickup), new Point(outtake3))
         );
-        dropoff3.setLinearHeadingInterpolation(secondPickup.getHeading(), outtake.getHeading());
+        dropoff3.setLinearHeadingInterpolation(secondPickup.getHeading(), outtake3.getHeading());
+
+        prepark = new Path(
+                new BezierLine(new Point(lift), new Point(parkLineup))
+        );
+        prepark.setLinearHeadingInterpolation(lift.getHeading(), parkLineup.getHeading());
 
         park = new Path(
-                new BezierLine(new Point(outtake), new Point(parkOnBar))
+                new BezierLine(new Point(parkLineup), new Point(parkOnBar))
         );
-        park.setLinearHeadingInterpolation(outtake.getHeading(), parkOnBar.getHeading());
+        park.setLinearHeadingInterpolation(parkLineup.getHeading(), parkOnBar.getHeading());
     }
     public void autoStateUpdate() {
         switch (pathState) {
@@ -103,23 +112,105 @@ public class BasketAuto extends OpMode {
                 }
                 break;
             case 4:
-                if (pathTimer.getElapsedTime() > 1000) {
+                if (pathTimer.getElapsedTime() > 500) {
                     robotLift.setMode(Lift.Mode.HOME);
                     setPathState(5);
                 }
                 break;
             case 5:
                 if (pathTimer.getElapsedTime() > 2000) {
-                    robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
+                    robotLift.setMode(Lift.Mode.REAR_PICKUP);
                     robotLift.intake(1);
                     follower.followPath(pickup1);
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 3000) {
+                    robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
+                    setPathState(7);
+                }
+                break;
+            case 7:
+                if (pathTimer.getElapsedTime() > 1000) {
+                    robotLift.setMode(Lift.Mode.HIGH_BASKET);
                     robotLift.intake(0);
-                    robotLift.setMode(Lift.Mode.HOME);
+                    setPathState(8);
+                }
+            case 8:
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(dropoff2);
+                    setPathState(9);
+                }
+                break;
+            case 9:
+                if (pathTimer.getElapsedTime() > 3000) {
+                    robotLift.intake(-1);
+                    setPathState(10);
+                }
+                break;
+            case 10:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(backup);
+                    setPathState(11);
+                }
+                break;
+            case 11:
+                if (pathTimer.getElapsedTime() > 1000) {
+                    robotLift.setMode(Lift.Mode.REAR_PICKUP);
+                    robotLift.intake(0);
+                    setPathState(12);
+                }
+                break;
+            case 12:
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(pickup2);
+                    setPathState(13);
+                }
+                break;
+            case 13:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
+                    robotLift.intake(1);
+                    setPathState(14);
+                }
+                break;
+            case 14:
+                if (pathTimer.getElapsedTime() > 1500) {
+                    robotLift.setMode(Lift.Mode.HIGH_BASKET);
+                    robotLift.intake(0);
+                    follower.followPath(dropoff3);
+                    setPathState(15);
+                }
+                break;
+            case 15:
+                if (pathTimer.getElapsedTime() > 3000) {
+                    robotLift.intake(-1);
+                    setPathState(16);
+                }
+                break;
+            case 16:
+                if (pathTimer.getElapsedTime() > 1000) {
+                    robotLift.intake(0);
+                    follower.followPath(backup);
+                    setPathState(17);
+                }
+                break;
+            case 17:
+                if (pathTimer.getElapsedTime() > 500) {
+                    robotLift.setMode(Lift.Mode.LOW_BASKET);
+                    setPathState(18);
+                }
+                break;
+            case 18:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(prepark);
+                    setPathState(19);
+                }
+                break;
+            case 19:
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(park);
                     setPathState(-1);
                 }
                 break;

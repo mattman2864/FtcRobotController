@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+;
+
 public class Drivetrain {
     HardwareMap hardwareMap;
     DcMotor frontLeft;
@@ -25,12 +27,11 @@ public class Drivetrain {
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rearRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        speed = Config.Drivetrain.speed;
+        speed = 1;
     }
     public void setSpeed(double newSpeed) {
         this.speed = newSpeed;
     }
-
     public void joystickDrive(double leftStickX, double leftStickY, double rightStickX) {
         // joystick y axis is reversed, where up is + and down is -
         double y = -leftStickY;
@@ -54,5 +55,13 @@ public class Drivetrain {
         this.frontRight.setPower(fr);
         this.rearLeft.setPower(rl);
         this.rearRight.setPower(rr);
+    }
+
+    public void tankDrive(double leftStickY, double rightStickY) {
+        // Basic tank drive for wheelie bot
+        this.frontLeft.setPower(-leftStickY);
+        this.rearLeft.setPower(-leftStickY);
+        this.frontRight.setPower(-rightStickY);
+        this.rearRight.setPower(-rightStickY);
     }
 }

@@ -12,16 +12,18 @@ public class Config {
     public static class Lift {
         public static String lift = "lift";
         public static int liftMin = 0;
-        public static int liftMax = 4780; // REVERSE
+        public static int liftIntake = 3500; // TODO: find lift position for intake
+        public static int liftMax = 4500; // REVERSE
     }
     public static class Rotator {
         public static String rotator = "rotator";
         public static int rotatorMin = 0;
+        public static int rotatorIntake = 100; // TODO: Find rotator position for intake
         public static int rotatorMax = 3169; // REVERSE
     }
     public static class Arm {
         static String flipper = "flipper";
-        static int flipMax = 1000;
+        static int flipMax = 1800; //TODO: add max
         static int flipMin = 0;
     }
 
