@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Lift {
+
+    // Hardware classes
     HardwareMap hardwareMap;
     DcMotor rotator;
     DcMotor lift;
@@ -22,13 +24,21 @@ public class Lift {
     Servo wrist;
     CRServo intakeLeft;
     CRServo intakeRight;
-    int targetRotator = 0;
-    int targetLift = 0;
-    int targetFlip = 0;
-    double targetWrist;
+
+    public int targetRotator = 0;
+    public int targetLift = 0;
+    public int targetFlip = 0;
+    public double targetWrist;
+
     BasicPID rotatorController;
     BasicPID liftController;
     BasicPID flipperController;
+
+    public int rotatorPosition;
+    public int liftPosition;
+    public int flipPosition;
+    public double wristPosition;
+
     public enum Mode {
         HOME,
         FRONT_PICKUP,
@@ -36,7 +46,11 @@ public class Lift {
         REAR_PICKUP,
         REAR_PICKUP_DROP,
         HIGH_BASKET,
-        LOW_BASKET
+        LOW_BASKET,
+        SPECIMAN_PICKUP,
+        SPECIMAN_PRESET,
+        SPECIMAN_PLACE,
+        TESTING,
     }
     public Mode mode = Mode.HOME;
     TouchSensor touch;
@@ -71,27 +85,32 @@ public class Lift {
 
         stateTimer = new ElapsedTime();
         stateTimer.reset();
-//        mag1 = hardwareMap.get(DigitalChannel.class, "mag1");
-
+//      mag1 = hardwareMap.get(DigitalChannel.class, "mag1");
     }
+
     private void setRotatorTarget(int target) {
         targetRotator = (int)clamp(target, Config.Rotator.rotatorMin, Config.Rotator.rotatorMax);
     }
+
     private void setLiftTarget(int target) {
         targetLift = (int)clamp(target, Config.Lift.liftMin, Config.Lift.liftMax);
     }
+
     private void setFlipTarget(int target) {
         targetFlip = (int)clamp(target, Config.Arm.flipMin, Config.Arm.flipMax);
     }
+
     public void intake(double speed) {
         speed *= 0.8; // servo speed coefficient
         intakeLeft.setPower(-speed);
         intakeRight.setPower(speed);
     }
+
     public void setMode(Mode mode) {
         this.mode = mode;
         stateTimer.reset();
     }
+
     public void update() {
         // MANAGE STATE
         switch (mode) {
@@ -139,11 +158,42 @@ public class Lift {
                 setRotatorTarget(2847);
                 targetWrist = 1;
                 break;
+            case SPECIMAN_PICKUP:
+                setFlipTarget(210);
+                setLiftTarget(0);
+                setRotatorTarget(1940);
+                targetWrist = 0.3;
+                break;
+            case SPECIMAN_PRESET:
+                setFlipTarget(1390);
+                setLiftTarget(0);
+                setRotatorTarget(1940);
+                targetWrist = 0.1;
+                break;
+            case SPECIMAN_PLACE:
+                setFlipTarget(1390);
+                setLiftTarget(2010);
+                setRotatorTarget(1940);
+                targetWrist = 0.1;
+                break;
+            case TESTING:
+                setFlipTarget(targetFlip);
+                setRotatorTarget(targetRotator);
+                setLiftTarget(targetLift);
+                wrist.setPosition(targetWrist);
+
+                flipPosition = flipper.getCurrentPosition();
+                rotatorPosition = rotator.getCurrentPosition();
+                liftPosition = lift.getCurrentPosition();
+                wristPosition = wrist.getPosition();
+                break;
         }
+
         if (touch.isPressed() && mode == Mode.HOME) {
             lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
+
         if ((Math.abs(rotator.getCurrentPosition() - targetRotator) > 100)) {
             flipper.setTargetPosition(0);
             lift.setTargetPosition(0);
