@@ -20,7 +20,7 @@ public class FConstants {
         FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
         FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
 
-        FollowerConstants.drivePIDFCoefficients.setCoefficients(.01, 0, 0.01, 0, 0);
+        FollowerConstants.drivePIDFCoefficients.setCoefficients(.007, 0, 0, 0, 0);
         FollowerConstants.translationalPIDFCoefficients.setCoefficients(.05, 0, .01, 0);
         FollowerConstants.headingPIDFCoefficients.setCoefficients(0.6, .001, 0.01, 0);
     }
