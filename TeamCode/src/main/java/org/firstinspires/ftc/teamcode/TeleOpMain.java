@@ -21,7 +21,7 @@ public class TeleOpMain extends LinearOpMode {
                     lift.setMode(Lift.Mode.HOME);
                 } else if (controller.B()) {
                     lift.setMode(Lift.Mode.FRONT_PICKUP);
-                } else if (controller.dpadLeft()) {
+                } else if (controller.dpadUp()) {
                     lift.setMode(Lift.Mode.REAR_PICKUP);
                 } else if (controller.X()) {
                     lift.setMode(Lift.Mode.HIGH_BASKET);

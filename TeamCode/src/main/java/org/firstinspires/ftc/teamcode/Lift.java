@@ -75,7 +75,7 @@ public class Lift {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setTargetPosition(targetLift);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.setPower(1);
+        lift.setPower(0);
         lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
         flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -107,12 +107,18 @@ public class Lift {
     }
 
     public void setMode(Mode mode) {
+        if (mode != Mode.HOME && this.mode == Mode.HOME) {
+            // Reset encoder position to prevent lift
+            flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
         this.mode = mode;
         stateTimer.reset();
     }
 
     public void update() {
         // MANAGE STATE
+        // Modes can be defined here, need to be instantiated above
         switch (mode) {
             case HOME:
                 setFlipTarget(0);
@@ -122,13 +128,13 @@ public class Lift {
                 break;
             case FRONT_PICKUP:
                 setFlipTarget(1400);
-                setLiftTarget(500);
+                setLiftTarget(200);
                 setRotatorTarget(0);
                 targetWrist = 0;
                 break;
             case FRONT_PICKUP_DROP:
-                setFlipTarget(1500);
-                setLiftTarget(500);
+                setFlipTarget(1550);
+                setLiftTarget(200);
                 setRotatorTarget(0);
                 targetWrist = 0.05;
                 intake(1);
@@ -206,6 +212,11 @@ public class Lift {
             flipper.setTargetPosition(targetFlip);
             wrist.setPosition(targetWrist);
             rotator.setTargetPosition(targetRotator);
+            if (Math.abs(flipper.getCurrentPosition() - targetFlip) < 10 && mode == Mode.HOME) {
+                flipper.setPower(0);
+            } else {
+                flipper.setPower(1);
+            }
         }
     }
 }
