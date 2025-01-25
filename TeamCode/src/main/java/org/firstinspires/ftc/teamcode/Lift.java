@@ -142,7 +142,7 @@ public class Lift {
             case REAR_PICKUP:
                 setFlipTarget(160);
                 setLiftTarget(500);
-                setRotatorTarget(2847);
+                setRotatorTarget(300);
                 targetWrist = 0.68;
                 break;
             case REAR_PICKUP_DROP:
@@ -170,17 +170,11 @@ public class Lift {
                 setRotatorTarget(1940);
                 targetWrist = 0.3;
                 break;
-            case SPECIMAN_PRESET:
-                setFlipTarget(1390);
-                setLiftTarget(0);
-                setRotatorTarget(1940);
-                targetWrist = 0.1;
-                break;
             case SPECIMAN_PLACE:
-                setFlipTarget(1390);
-                setLiftTarget(2010);
-                setRotatorTarget(1940);
-                targetWrist = 0.1;
+                setFlipTarget(1550);
+                setLiftTarget(1910);
+                setRotatorTarget(2090);
+                targetWrist = 0;
                 break;
             case TESTING:
                 setFlipTarget(targetFlip);

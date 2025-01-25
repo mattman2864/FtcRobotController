@@ -54,12 +54,10 @@ public class PositionFinder extends LinearOpMode {
                 if (controller.B()) {
                     lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
                 }
-                if (controller.Y()) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PRESET);
-                }
                 if (controller.X()) {
                     lift.setMode(Lift.Mode.SPECIMAN_PLACE);
                 }
+
                 // Intake
                 //lift.intake(controller.right_trigger - controller.left_trigger);
 
