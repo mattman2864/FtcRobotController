@@ -151,16 +151,28 @@ public class ConceptVisionColorLocator extends LinearOpMode
              *
              * Use any of the following filters.
              *
+<<<<<<< HEAD
              * ColorBlobLocatorProcessor.org.firstinspires.ftc.teamcode.Util.filterByArea(minArea, maxArea, blobs);
              *   A Blob's area is the number of pixels contained within the Contour.  Filter out any that are too big or small.
              *   Start with a large range and then refine the range based on the likely size of the desired object in the viewfinder.
              *
              * ColorBlobLocatorProcessor.org.firstinspires.ftc.teamcode.Util.filterByDensity(minDensity, maxDensity, blobs);
+=======
+             * ColorBlobLocatorProcessor.Util.filterByArea(minArea, maxArea, blobs);
+             *   A Blob's area is the number of pixels contained within the Contour.  Filter out any that are too big or small.
+             *   Start with a large range and then refine the range based on the likely size of the desired object in the viewfinder.
+             *
+             * ColorBlobLocatorProcessor.Util.filterByDensity(minDensity, maxDensity, blobs);
+>>>>>>> upstream/master
              *   A blob's density is an indication of how "full" the contour is.
              *   If you put a rubber band around the contour you would get the "Convex Hull" of the contour.
              *   The density is the ratio of Contour-area to Convex Hull-area.
              *
+<<<<<<< HEAD
              * ColorBlobLocatorProcessor.org.firstinspires.ftc.teamcode.Util.filterByAspectRatio(minAspect, maxAspect, blobs);
+=======
+             * ColorBlobLocatorProcessor.Util.filterByAspectRatio(minAspect, maxAspect, blobs);
+>>>>>>> upstream/master
              *   A blob's Aspect ratio is the ratio of boxFit long side to short side.
              *   A perfect Square has an aspect ratio of 1.  All others are > 1
              */
@@ -169,9 +181,15 @@ public class ConceptVisionColorLocator extends LinearOpMode
             /*
              * The list of Blobs can be sorted using the same Blob attributes as listed above.
              * No more than one sort call should be made.  Sorting can use ascending or descending order.
+<<<<<<< HEAD
              *     ColorBlobLocatorProcessor.org.firstinspires.ftc.teamcode.Util.sortByArea(SortOrder.DESCENDING, blobs);      // Default
              *     ColorBlobLocatorProcessor.org.firstinspires.ftc.teamcode.Util.sortByDensity(SortOrder.DESCENDING, blobs);
              *     ColorBlobLocatorProcessor.org.firstinspires.ftc.teamcode.Util.sortByAspectRatio(SortOrder.DESCENDING, blobs);
+=======
+             *     ColorBlobLocatorProcessor.Util.sortByArea(SortOrder.DESCENDING, blobs);      // Default
+             *     ColorBlobLocatorProcessor.Util.sortByDensity(SortOrder.DESCENDING, blobs);
+             *     ColorBlobLocatorProcessor.Util.sortByAspectRatio(SortOrder.DESCENDING, blobs);
+>>>>>>> upstream/master
              */
 
             telemetry.addLine(" Area Density Aspect  Center");
