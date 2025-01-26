@@ -23,7 +23,7 @@ public class Config {
     }
     public static class Arm {
         static String flipper = "flipper";
-        static int flipMax = 1800; //TODO: add max
+        static int flipMax = 2500; //TODO: add max
         static int flipMin = 0;
     }
 

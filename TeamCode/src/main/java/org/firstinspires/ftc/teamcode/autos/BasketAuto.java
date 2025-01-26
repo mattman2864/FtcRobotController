@@ -18,14 +18,14 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 @Autonomous(name = "Basket")
 public class BasketAuto extends OpMode {
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
-    private final Pose lift = new Pose(8, 11, Math.toRadians(-45));
-    private final Pose outtake = new Pose(8.5, 16.5, Math.toRadians(-45));
-    private final Pose outtake2 = new Pose(10, 22, Math.toRadians(-45));
-    private final Pose outtake3 = new Pose(10, 23.5, Math.toRadians(-45));
-    private final Pose firstPickup = new Pose(22, 15, Math.toRadians(180));
-    private final Pose secondPickup = new Pose(22, 21, Math.toRadians(180));
-    private final Pose parkLineup = new Pose(53, 15, Math.toRadians(90));
-    private final Pose parkOnBar = new Pose(53, -9, Math.toRadians(90));
+    private final Pose lift = new Pose(10, 11, Math.toRadians(-45));
+    private final Pose outtake = new Pose(10, 23.5, Math.toRadians(-45));
+    private final Pose outtake2 = new Pose(10.5, 22, Math.toRadians(-45));
+    private final Pose outtake3 = new Pose(10.5, 22, Math.toRadians(-45));
+    private final Pose firstPickup = new Pose(28, 15, Math.toRadians(180));
+    private final Pose secondPickup = new Pose(28, 24, Math.toRadians(180));
+    private final Pose parkLineup = new Pose(53, 15, Math.toRadians(-90));
+    private final Pose parkOnBar = new Pose(53, 0, Math.toRadians(-90));
     private Timer pathTimer, actionTimer, opmodeTimer;
     int pathState = 0;
     Follower follower;
@@ -61,9 +61,9 @@ public class BasketAuto extends OpMode {
         pickup1.setLinearHeadingInterpolation(lift.getHeading(), firstPickup.getHeading());
 
         dropoff2 = new Path(
-                new BezierLine(new Point(firstPickup), new Point(outtake2))
+                new BezierLine(new Point(firstPickup), new Point(outtake))
         );
-        dropoff2.setLinearHeadingInterpolation(firstPickup.getHeading(), outtake2.getHeading());
+        dropoff2.setLinearHeadingInterpolation(firstPickup.getHeading(), outtake.getHeading());
 
         pickup2 = new Path(
                 new BezierLine(new Point(lift), new Point(secondPickup))
@@ -71,9 +71,9 @@ public class BasketAuto extends OpMode {
         pickup2.setLinearHeadingInterpolation(lift.getHeading(), secondPickup.getHeading());
 
         dropoff3 = new Path(
-                new BezierLine(new Point(secondPickup), new Point(outtake3))
+                new BezierLine(new Point(secondPickup), new Point(outtake))
         );
-        dropoff3.setLinearHeadingInterpolation(secondPickup.getHeading(), outtake3.getHeading());
+        dropoff3.setLinearHeadingInterpolation(secondPickup.getHeading(), outtake.getHeading());
 
         prepark = new Path(
                 new BezierLine(new Point(lift), new Point(parkLineup))
@@ -93,19 +93,19 @@ public class BasketAuto extends OpMode {
                 robotLift.setMode(Lift.Mode.HIGH_BASKET);
                 break;
             case 1:
-                if (pathTimer.getElapsedTime() > 4000) {
+                if (pathTimer.getElapsedTime() > 2000) {
                     follower.followPath(dropoff1);
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 1500) {
                     robotLift.intake(-1);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 500) {
                     follower.followPath(backup);
                     robotLift.intake(0);
                     setPathState(4);
@@ -113,26 +113,25 @@ public class BasketAuto extends OpMode {
                 break;
             case 4:
                 if (pathTimer.getElapsedTime() > 500) {
-                    robotLift.setMode(Lift.Mode.HOME);
+                    robotLift.setMode(Lift.Mode.REAR_PICKUP);
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (pathTimer.getElapsedTime() > 2000) {
-                    robotLift.setMode(Lift.Mode.REAR_PICKUP);
+                if (pathTimer.getElapsedTime() > 1000) {
                     robotLift.intake(1);
                     follower.followPath(pickup1);
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (pathTimer.getElapsedTime() > 3000) {
+                if (pathTimer.getElapsedTime() > 1500) {
                     robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if (pathTimer.getElapsedTime() > 1000) {
+                if (pathTimer.getElapsedTime() > 700) {
                     robotLift.setMode(Lift.Mode.HIGH_BASKET);
                     robotLift.intake(0);
                     setPathState(8);
@@ -150,15 +149,15 @@ public class BasketAuto extends OpMode {
                 }
                 break;
             case 10:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 500) {
                     follower.followPath(backup);
+                    robotLift.intake(0);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (pathTimer.getElapsedTime() > 1000) {
+                if (pathTimer.getElapsedTime() > 800) {
                     robotLift.setMode(Lift.Mode.REAR_PICKUP);
-                    robotLift.intake(0);
                     setPathState(12);
                 }
                 break;
@@ -169,14 +168,14 @@ public class BasketAuto extends OpMode {
                 }
                 break;
             case 13:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 1500) {
                     robotLift.setMode(Lift.Mode.REAR_PICKUP_DROP);
                     robotLift.intake(1);
                     setPathState(14);
                 }
                 break;
             case 14:
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 700) {
                     robotLift.setMode(Lift.Mode.HIGH_BASKET);
                     robotLift.intake(0);
                     follower.followPath(dropoff3);
@@ -190,7 +189,7 @@ public class BasketAuto extends OpMode {
                 }
                 break;
             case 16:
-                if (pathTimer.getElapsedTime() > 1000) {
+                if (pathTimer.getElapsedTime() > 500) {
                     robotLift.intake(0);
                     follower.followPath(backup);
                     setPathState(17);
@@ -198,7 +197,7 @@ public class BasketAuto extends OpMode {
                 break;
             case 17:
                 if (pathTimer.getElapsedTime() > 500) {
-                    robotLift.setMode(Lift.Mode.LOW_BASKET);
+                    robotLift.setMode(Lift.Mode.PARK);
                     setPathState(18);
                 }
                 break;

@@ -48,8 +48,10 @@ public class Lift {
         HIGH_BASKET,
         LOW_BASKET,
         SPECIMAN_PICKUP,
-        SPECIMAN_PRESET,
-        SPECIMAN_PLACE,
+        SPECIMAN_PLACE_LOW,
+        SPECIMAN_PLACE_HIGH,
+        HANG,
+        PARK,
         TESTING,
     }
     public Mode mode = Mode.HOME;
@@ -78,7 +80,6 @@ public class Lift {
         lift.setPower(1);
         lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flipper.setTargetPosition(targetFlip);
         flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         flipper.setPower(0.8);
@@ -107,6 +108,11 @@ public class Lift {
     }
 
     public void setMode(Mode mode) {
+        if (mode != Mode.HOME && this.mode == Mode.HOME) {
+            // Reset encoder position to prevent lift
+            flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
         this.mode = mode;
         stateTimer.reset();
     }
@@ -159,22 +165,22 @@ public class Lift {
                 targetWrist = 1;
                 break;
             case SPECIMAN_PICKUP:
-                setFlipTarget(210);
+                setFlipTarget(220);
                 setLiftTarget(0);
                 setRotatorTarget(1940);
                 targetWrist = 0.3;
                 break;
-            case SPECIMAN_PRESET:
-                setFlipTarget(1390);
+            case SPECIMAN_PLACE_LOW:
+                setFlipTarget(1670);
                 setLiftTarget(0);
                 setRotatorTarget(1940);
-                targetWrist = 0.1;
+                targetWrist = 0.12;
                 break;
-            case SPECIMAN_PLACE:
-                setFlipTarget(1390);
-                setLiftTarget(2010);
-                setRotatorTarget(1940);
-                targetWrist = 0.1;
+            case SPECIMAN_PLACE_HIGH:
+                setFlipTarget(1550);
+                setLiftTarget(1790);
+                setRotatorTarget(2090);
+                targetWrist = 0;
                 break;
             case TESTING:
                 setFlipTarget(targetFlip);
@@ -187,6 +193,19 @@ public class Lift {
                 liftPosition = lift.getCurrentPosition();
                 wristPosition = wrist.getPosition();
                 break;
+            case HANG:
+                setFlipTarget(0);
+                setLiftTarget(1390);
+                setRotatorTarget(3110);
+                targetWrist = 0;
+                break;
+            case PARK:
+                setFlipTarget(850);
+                setLiftTarget(0);
+                setRotatorTarget(0);
+                targetWrist = 0.3;
+                break;
+
         }
 
         if (touch.isPressed() && mode == Mode.HOME) {
@@ -198,7 +217,7 @@ public class Lift {
             flipper.setTargetPosition(0);
             lift.setTargetPosition(0);
             wrist.setPosition(0);
-            if (Math.abs(flipper.getCurrentPosition()) < 20 && Math.abs(lift.getCurrentPosition()) < 20) {
+            if (Math.abs(flipper.getCurrentPosition()) < 20 && Math.abs(lift.getCurrentPosition()) < 20 || stateTimer.milliseconds() > 1000) {
                 rotator.setTargetPosition(targetRotator);
             }
         } else {
@@ -206,6 +225,11 @@ public class Lift {
             flipper.setTargetPosition(targetFlip);
             wrist.setPosition(targetWrist);
             rotator.setTargetPosition(targetRotator);
+            if (Math.abs(flipper.getCurrentPosition() - targetFlip) < 10 && (this.mode == Mode.HOME || this.mode == Mode.PARK)) {
+                flipper.setPower(0);
+            } else {
+                flipper.setPower(1);
+            }
         }
     }
 }

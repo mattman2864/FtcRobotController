@@ -20,12 +20,15 @@ public class PositionFinder extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
 
+                /*
                 telemetry.addData("Right Trigger: ", controller.right_trigger);
                 telemetry.addData("Left Trigger: ", controller.left_trigger);
                 telemetry.addData("Right Bumper: ", controller.rightBumper());
                 telemetry.addData("Left Bumper: ", controller.leftBumper());
                 telemetry.addData("Dpad Left: ", controller.dpadLeft());
                 telemetry.addData("Dpad Right: ", controller.dpadRight());
+                */
+
 
                 if (controller.right_trigger > 0) {
                     lift.targetLift += 10;
@@ -55,13 +58,14 @@ public class PositionFinder extends LinearOpMode {
                     lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
                 }
                 if (controller.Y()) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PRESET);
+                    lift.setMode(Lift.Mode.HOME);
                 }
                 if (controller.X()) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PLACE);
+                    lift.setMode(Lift.Mode.SPECIMAN_PLACE_HIGH);
                 }
+
                 // Intake
-                //lift.intake(controller.right_trigger - controller.left_trigger);
+                lift.intake(controller.right_trigger - controller.left_trigger);
 
                 //Drive
                 drive.joystickDrive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
