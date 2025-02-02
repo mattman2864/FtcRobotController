@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp (name="Main")
-public class TeleOpMain extends LinearOpMode {
+@TeleOp (name="Single Driver")
+public class SingleDriver extends LinearOpMode {
     Lift lift;
     Drivetrain drive;
     Controller controller;
