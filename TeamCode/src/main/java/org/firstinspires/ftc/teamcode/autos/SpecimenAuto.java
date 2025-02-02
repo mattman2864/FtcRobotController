@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autos;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
@@ -15,8 +14,8 @@ import org.firstinspires.ftc.teamcode.Lift;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "Speciman Auto")
-public class SpecimanAuto extends OpMode {
+@Autonomous(name = "Specimen Auto")
+public class SpecimenAuto extends OpMode {
 
     //
     // Poses and Points
@@ -48,6 +47,24 @@ public class SpecimanAuto extends OpMode {
 
     private final Pose clippingPose4 = new Pose(clippingPose1.getX(), lineupPose1.getY()-3*lineupSpacing, Math.toRadians(0));
 
+    // Pushing Poses
+
+    private final Pose pushPose1 = new Pose(22.8, -26.3, 0);
+
+    private final Pose pushPose2 = new Pose(51.2, -26.3, 0);
+
+    private final Pose pushPose3 = new Pose(51.2, -38.2, 0);
+
+    private final Pose pushPose4 = new Pose(12.3, -38.2, 0);
+
+    private final Pose pushPose5 = new Pose(51.2, -48.2, 0);
+
+    private final Pose pushPose6 = new Pose(12.3, -48.2, 0);
+
+    private final Pose pushPose7 = new Pose(51.2, -58.2,0);
+
+    private final Pose pushPose8 = new Pose(12.3, -58.2, 0);
+
     // Ground pick up Poses
 
     private final Pose groundPickupPose1 = new Pose(18.87, -38.90, Math.toRadians(0));
@@ -58,17 +75,17 @@ public class SpecimanAuto extends OpMode {
 
     // Dropoff Poses
 
-    private final Pose dropoffPose1 = new Pose();
+    private final Pose dropoffPose1 = new Pose(groundPickupPose1.getX() - 10, groundPickupPose1.getY(), 0);
 
-    private final Pose dropoffPose2 = new Pose();
+    private final Pose dropoffPose2 = new Pose(groundPickupPose2.getX() - 10, groundPickupPose2.getY(), 0);
 
     private final Pose dropoffPose3 = new Pose();
 
-    // Speciman Pickup Pose
+    // Specimen Pickup Pose
 
-    private final Pose specimanPickupLineupPose = new Pose();
+    private final Pose specimenPickupLineupPose = new Pose();
 
-    private final Pose specimanPickupPose = new Pose();
+    private final Pose specimenPickupPose = new Pose();
 
     //
     // Paths
@@ -78,6 +95,9 @@ public class SpecimanAuto extends OpMode {
 
     PathChain initClip;
 
+    PathChain backtoInitLineUp;
+
+    // For ground pickup
     PathChain toGroundPickup1;
 
     PathChain dropoff1;
@@ -89,6 +109,22 @@ public class SpecimanAuto extends OpMode {
     PathChain toGroundPickup3;
 
     PathChain dropoff3;
+
+    // For ground pushing
+
+    PathChain pushPath;
+
+    PathChain pushPath2;
+
+    PathChain pushPath3;
+
+    PathChain pushPath4;
+
+    PathChain pushPath5;
+
+    PathChain pushPath6;
+
+    PathChain pushPath7;
 
     PathChain retrieveFirstSpecimen;
 
@@ -130,6 +166,29 @@ public class SpecimanAuto extends OpMode {
                 .setConstantHeadingInterpolation(0)
                 .build();
 
+        backtoInitLineUp = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(lineupPose1), new Point(startPose)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+
+        // Pushing
+
+        pushPath = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(startPose), new Point(pushPose1)))
+                //.addPath(new BezierLine(new Point(pushPose1), new Point(pushPose2)))
+                //.addPath(new BezierLine(new Point(pushPose2), new Point(pushPose3)))
+                //.addPath(new BezierLine(new Point(pushPose3), new Point(pushPose4)))
+                //.addPath(new BezierLine(new Point(pushPose4), new Point(pushPose3)))
+                //.addPath(new BezierLine(new Point(pushPose3), new Point(pushPose5)))
+                //.addPath(new BezierLine(new Point(pushPose5), new Point(pushPose6)))
+                //.addPath(new BezierLine(new Point(pushPose6), new Point(pushPose5)))
+                //.addPath(new BezierLine(new Point(pushPose5), new Point(pushPose7)))
+                //.addPath(new BezierLine(new Point(pushPose7), new Point(pushPose8)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+
+        // Ground Pickup
+
         toGroundPickup1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(clippingPose1), new Point(groundPickupPose1)))
                 .setConstantHeadingInterpolation(0)
@@ -161,37 +220,37 @@ public class SpecimanAuto extends OpMode {
                 .build();
 
         retrieveFirstSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(dropoffPose3), new Point(specimanPickupLineupPose)))
-                .addPath(new BezierLine(new Point(specimanPickupLineupPose), new Point(specimanPickupPose)))
+                .addPath(new BezierLine(new Point(dropoffPose3), new Point(specimenPickupLineupPose)))
+                .addPath(new BezierLine(new Point(specimenPickupLineupPose), new Point(specimenPickupPose)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
         clip1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimanPickupPose), new Point(lineupPose2)))
+                .addPath(new BezierLine(new Point(specimenPickupPose), new Point(lineupPose2)))
                 .addPath(new BezierLine(new Point(lineupPose2), new Point(clippingPose2)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
         retrieveSecondSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(clippingPose2), new Point(specimanPickupLineupPose)))
-                .addPath(new BezierLine(new Point(specimanPickupLineupPose), new Point(specimanPickupPose)))
+                .addPath(new BezierLine(new Point(clippingPose2), new Point(specimenPickupLineupPose)))
+                .addPath(new BezierLine(new Point(specimenPickupLineupPose), new Point(specimenPickupPose)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
         clip2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimanPickupPose), new Point(lineupPose3)))
+                .addPath(new BezierLine(new Point(specimenPickupPose), new Point(lineupPose3)))
                 .addPath(new BezierLine(new Point(lineupPose3), new Point(clippingPose3)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
         retrieveThirdSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(clippingPose3), new Point(specimanPickupLineupPose)))
-                .addPath(new BezierLine(new Point(specimanPickupLineupPose), new Point(specimanPickupPose)))
+                .addPath(new BezierLine(new Point(clippingPose3), new Point(specimenPickupLineupPose)))
+                .addPath(new BezierLine(new Point(specimenPickupLineupPose), new Point(specimenPickupPose)))
                 .setConstantHeadingInterpolation(0)
                 .build();
 
         clip3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimanPickupPose), new Point(lineupPose4)))
+                .addPath(new BezierLine(new Point(specimenPickupPose), new Point(lineupPose4)))
                 .addPath(new BezierLine(new Point(lineupPose4), new Point(clippingPose4)))
                 .setConstantHeadingInterpolation(0)
                 .build();
@@ -209,25 +268,25 @@ public class SpecimanAuto extends OpMode {
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 4500) {
-                    follower.followPath(toGroundPickup1);
+                if (pathTimer.getElapsedTime() > 2500) {
+                    follower.followPath(backtoInitLineUp);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 4000) {
-                    follower.followPath(dropoff1);
-                    setPathState(4);
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(pushPath);
+                    //setPathState(4);
                 }
                 break;
             case 4:
-                if (pathTimer.getElapsedTime() > 5000) {
+                if (pathTimer.getElapsedTime() > 4000) {
                     follower.followPath(toGroundPickup2);
-                    //setPathState(5);
+                    setPathState(5);
                 }
                 break;
             case 5:
-                if (pathTimer.getElapsedTime() > 5000) {
+                if (pathTimer.getElapsedTime() > 4000) {
                     follower.followPath(dropoff2);
                     setPathState(6);
                 }
@@ -235,7 +294,7 @@ public class SpecimanAuto extends OpMode {
             case 6:
                 if (pathTimer.getElapsedTime() > 5000) {
                     follower.followPath(toGroundPickup3);
-                    setPathState(7);
+                    //setPathState(7);
                 }
                 break;
             case 7:
@@ -290,23 +349,23 @@ public class SpecimanAuto extends OpMode {
     public void liftStateUpdate() {
         switch (liftState) {
             case 0:
-                lift.setMode(Lift.Mode.SPECIMAN_PLACE_HIGH);
+                lift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
                 setLiftState(1);
                 break;
             case 1:
-                if (liftTimer.getElapsedTime() > 6500)
+                if (liftTimer.getElapsedTime() > 10500)
                 {
                     lift.setMode(Lift.Mode.HOME);
                     lift.intake(0);
-                    setLiftState(2);
-                } else if (liftTimer.getElapsedTime() > 6000)
+                    //setLiftState(2);
+                } else if (liftTimer.getElapsedTime() > 10000)
                 {
                     lift.intake(-1);
                 }
                 break;
             case 2:
                 if (liftTimer.getElapsedTime() > 3200) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
+                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
                     lift.intake(0);
                     setLiftState(2);
                 } else if (liftTimer.getElapsedTime() > 3000)
@@ -319,15 +378,15 @@ public class SpecimanAuto extends OpMode {
                 }
                 break;
             case 3:
-                if (liftTimer.getElapsedTime() > 1200)
-                {
+                if (liftTimer.getElapsedTime() > 2500) {
                     lift.intake(0);
-                    lift.setMode(Lift.Mode.FRONT_PICKUP);
                     setLiftState(4);
+                } else if (liftTimer.getElapsedTime() > 2000) {
+                    lift.intake(-1);
                 }
                 else if (liftTimer.getElapsedTime() > 1000)
                 {
-                    lift.intake(-1);
+                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
                     //setLiftState(4);
                 }
                 break;

@@ -55,13 +55,13 @@ public class PositionFinder extends LinearOpMode {
                     lift.setMode(Lift.Mode.TESTING);
                 }
                 if (controller.B()) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
+                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
                 }
                 if (controller.Y()) {
                     lift.setMode(Lift.Mode.HOME);
                 }
                 if (controller.X()) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PLACE_HIGH);
+                    lift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
                 }
 
                 // Intake
