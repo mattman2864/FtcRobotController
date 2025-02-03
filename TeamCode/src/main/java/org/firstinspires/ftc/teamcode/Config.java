@@ -33,4 +33,9 @@ public class Config {
         public static String intakeRight = "intakeRight";
         public static String color = "color";
     }
+    public static class Color {
+        public static String color = "color";
+        public static String led = "led";
+
+    }
 }

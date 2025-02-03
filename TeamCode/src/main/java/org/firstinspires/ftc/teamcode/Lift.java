@@ -6,6 +6,7 @@ import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.ThermalEquilibrium.homeostasis.Utils.Timer;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -59,6 +60,8 @@ public class Lift {
     ElapsedTime stateTimer;
     double adjustFlip = 0;
     double adjustLift = 0;
+    ColorSensor color;
+    Servo led;
 
     public Lift(HardwareMap map) {
         hardwareMap = map;
@@ -69,6 +72,8 @@ public class Lift {
         intakeLeft = hardwareMap.get(CRServo.class, Config.Intake.intakeLeft);
         intakeRight = hardwareMap.get(CRServo.class, Config.Intake.intakeRight);
         touch = hardwareMap.get(TouchSensor.class, "touch");
+        color = hardwareMap.get(ColorSensor.class, Config.Color.color);
+        led = hardwareMap.get(Servo.class, Config.Color.led);
 
         rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rotator.setTargetPosition(targetRotator);
@@ -123,6 +128,18 @@ public class Lift {
 
     public void fineTuneLift(double amount) {
         adjustLift = amount;
+    }
+
+    private void updateLED() {
+        if (color.red() > color.blue() && color.red() > color.green()) {
+            led.setPosition(0.28); // RED
+        } else if (color.blue() > color.green()) {
+            led.setPosition(0.65); // BLUE
+        } else if (color.green() > color.blue()) {
+            led.setPosition(0.35); // GREEN
+        } else {
+            led.setPosition(0); // OFF
+        }
     }
 
     public void update() {
@@ -244,5 +261,6 @@ public class Lift {
                 lift.setPower(1);
             }
         }
+        updateLED();
     }
 }
