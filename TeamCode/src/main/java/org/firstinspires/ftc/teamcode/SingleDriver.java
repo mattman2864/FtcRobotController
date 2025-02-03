@@ -56,6 +56,8 @@ public class SingleDriver extends LinearOpMode {
                     drive.setSpeed(1);
                 }
 
+                lift.fineTuneFlipper(controller.right_stick_y);
+
                 // Intake
                 lift.intake(controller.right_trigger - controller.left_trigger);
 

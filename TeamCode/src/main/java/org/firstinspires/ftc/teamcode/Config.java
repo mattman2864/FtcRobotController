@@ -19,7 +19,7 @@ public class Config {
         public static String rotator = "rotator";
         public static int rotatorMin = 0;
         public static int rotatorIntake = 100; // TODO: Find rotator position for intake
-        public static int rotatorMax = 3169; // REVERSE
+        public static int rotatorMax = 3000; // REVERSE
     }
     public static class Arm {
         static String flipper = "flipper";

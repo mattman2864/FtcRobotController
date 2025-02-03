@@ -163,19 +163,19 @@ public class Lift {
                 intake(0.8);
                 break;
             case HIGH_BASKET:
-                setFlipTarget(1000 + flipTweak);
+                setFlipTarget(1000 - flipTweak);
                 setLiftTarget(4200 + liftTweak);
                 setRotatorTarget(3000);
                 targetWrist = 1;
                 break;
             case LOW_BASKET:
-                setFlipTarget(1200 + flipTweak);
+                setFlipTarget(1200 - flipTweak);
                 setLiftTarget(1000 + liftTweak);
                 setRotatorTarget(3000);
                 targetWrist = 1;
                 break;
             case SPECIMEN_PICKUP:
-                setFlipTarget(153 + flipTweak);
+                setFlipTarget(153 - flipTweak);
                 setLiftTarget(60);
                 setRotatorTarget(1940);
                 targetWrist = 0.33;
@@ -206,7 +206,7 @@ public class Lift {
             case HANG:
                 setFlipTarget(0);
                 setLiftTarget(1390);
-                setRotatorTarget(3110);
+                setRotatorTarget(3000);
                 targetWrist = 0;
                 break;
             case PARK:

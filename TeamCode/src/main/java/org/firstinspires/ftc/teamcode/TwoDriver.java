@@ -58,7 +58,7 @@ public class TwoDriver extends LinearOpMode {
                 }
 
                 lift.fineTuneFlipper(controller1.right_stick_y);
-                lift.fineTuneLift(controller1.left_stick_y);
+                lift.fineTuneLift(-controller1.left_stick_y);
 
                 // Intake
                 lift.intake(controller1.right_trigger - controller1.left_trigger);
