@@ -47,9 +47,11 @@ public class Lift {
         REAR_PICKUP_DROP,
         HIGH_BASKET,
         LOW_BASKET,
+        HANG,
+        PARK,
         SPECIMAN_PICKUP,
         SPECIMAN_PRESET,
-        SPECIMAN_PLACE,
+        SPECIMAN_PLACE_HIGH,
         TESTING,
     }
     public Mode mode = Mode.HOME;
@@ -164,13 +166,17 @@ public class Lift {
                 setRotatorTarget(2847);
                 targetWrist = 1;
                 break;
+            case HANG:
+                break;
+            case PARK:
+                break;
             case SPECIMAN_PICKUP:
                 setFlipTarget(210);
                 setLiftTarget(0);
                 setRotatorTarget(1940);
                 targetWrist = 0.3;
                 break;
-            case SPECIMAN_PLACE:
+            case SPECIMAN_PLACE_HIGH:
                 setFlipTarget(1550);
                 setLiftTarget(1910);
                 setRotatorTarget(2090);
