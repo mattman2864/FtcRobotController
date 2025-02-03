@@ -61,7 +61,11 @@ public class PositionFinder extends LinearOpMode {
                     lift.setMode(Lift.Mode.HOME);
                 }
                 if (controller.X()) {
+<<<<<<< HEAD
                     lift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
+=======
+                    lift.setMode(Lift.Mode.SPECIMAN_PLACE_HIGH);
+>>>>>>> 50411f2fa2b8b516f0eaa39ec5594d3e3149d86f
                 }
 
                 // Intake

@@ -349,7 +349,7 @@ public class SpecimenAuto extends OpMode {
     public void liftStateUpdate() {
         switch (liftState) {
             case 0:
-                lift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
+                lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
                 setLiftState(1);
                 break;
             case 1:
@@ -365,7 +365,7 @@ public class SpecimenAuto extends OpMode {
                 break;
             case 2:
                 if (liftTimer.getElapsedTime() > 3200) {
-                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
+                    lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
                     lift.intake(0);
                     setLiftState(2);
                 } else if (liftTimer.getElapsedTime() > 3000)
@@ -386,7 +386,7 @@ public class SpecimenAuto extends OpMode {
                 }
                 else if (liftTimer.getElapsedTime() > 1000)
                 {
-                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
+                    lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
                     //setLiftState(4);
                 }
                 break;
