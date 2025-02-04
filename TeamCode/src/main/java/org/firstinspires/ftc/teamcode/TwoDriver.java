@@ -44,9 +44,9 @@ public class TwoDriver extends LinearOpMode {
                 } else if (controller1.Y()) {
                     lift.setMode(Lift.Mode.LOW_BASKET);
                 } else if (controller1.leftBumper()) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PLACE_HIGH);
+                    lift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
                 } else if (controller1.rightBumper()) {
-                    lift.setMode(Lift.Mode.SPECIMAN_PICKUP);
+                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
                 } else if (controller1.dpadUp()) {
                     lift.setMode(Lift.Mode.HANG);
                 }
@@ -57,8 +57,8 @@ public class TwoDriver extends LinearOpMode {
                     drive.setSpeed(1);
                 }
 
-                //lift.fineTuneFlipper(controller1.right_stick_y);
-                //lift.fineTuneLift(controller1.left_stick_y);
+                lift.fineTuneFlipper(controller1.right_stick_y);
+                lift.fineTuneLift(controller1.left_stick_y);
 
                 // Intake
                 lift.intake(controller1.right_trigger - controller1.left_trigger);
