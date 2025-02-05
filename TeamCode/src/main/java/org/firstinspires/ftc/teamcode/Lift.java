@@ -6,6 +6,7 @@ import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.ThermalEquilibrium.homeostasis.Utils.Timer;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -59,6 +60,8 @@ public class Lift {
     ElapsedTime stateTimer;
     double adjustFlip = 0;
     double adjustLift = 0;
+    ColorSensor color;
+    Servo led;
 
     public Lift(HardwareMap map) {
         hardwareMap = map;
@@ -69,6 +72,8 @@ public class Lift {
         intakeLeft = hardwareMap.get(CRServo.class, Config.Intake.intakeLeft);
         intakeRight = hardwareMap.get(CRServo.class, Config.Intake.intakeRight);
         touch = hardwareMap.get(TouchSensor.class, "touch");
+        color = hardwareMap.get(ColorSensor.class, Config.Color.color);
+        led = hardwareMap.get(Servo.class, Config.Color.led);
 
         rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rotator.setTargetPosition(targetRotator);
@@ -107,13 +112,8 @@ public class Lift {
         intakeLeft.setPower(-speed);
         intakeRight.setPower(speed);
     }
-    public void setMode(Mode mode) {
-        if (mode != Mode.HOME && this.mode == Mode.HOME) {
-            // Reset encoder position to prevent offset
-            flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-        this.mode = mode;
+    public void setMode(Mode newMode) {
+        this.mode = newMode;
         stateTimer.reset();
     }
 
@@ -123,6 +123,18 @@ public class Lift {
 
     public void fineTuneLift(double amount) {
         adjustLift = amount;
+    }
+
+    private void updateLED() {
+        if (color.red() > color.blue() && color.red() > color.green() && color.red() > 130) {
+            led.setPosition(0.28); // RED
+        } else if (color.blue() > color.green() && color.blue() > 130) {
+            led.setPosition(0.65); // BLUE
+        } else if (color.green() > 300) {
+            led.setPosition(0.35); // YELLOW
+        } else {
+            led.setPosition(0); // OFF
+        }
     }
 
     public void update() {
@@ -150,32 +162,32 @@ public class Lift {
                 intake(1);
                 break;
             case REAR_PICKUP:
-                setFlipTarget(120);
+                setFlipTarget(60);
                 setLiftTarget(200);
                 setRotatorTarget(3000);
                 targetWrist = 0.68;
                 break;
             case REAR_PICKUP_DROP:
-                setFlipTarget(80);
+                setFlipTarget(0);
                 setLiftTarget(0);
                 setRotatorTarget(3000);
                 targetWrist = 0.68;
                 intake(0.8);
                 break;
             case HIGH_BASKET:
-                setFlipTarget(1000 + flipTweak);
-                setLiftTarget(4200 + liftTweak);
+                setFlipTarget(1000 - flipTweak);
+                setLiftTarget(4400 + liftTweak);
                 setRotatorTarget(3000);
                 targetWrist = 1;
                 break;
             case LOW_BASKET:
-                setFlipTarget(1200 + flipTweak);
+                setFlipTarget(1200 - flipTweak);
                 setLiftTarget(1000 + liftTweak);
                 setRotatorTarget(3000);
                 targetWrist = 1;
                 break;
             case SPECIMEN_PICKUP:
-                setFlipTarget(153 + flipTweak);
+                setFlipTarget(153 - flipTweak);
                 setLiftTarget(60);
                 setRotatorTarget(1940);
                 targetWrist = 0.33;
@@ -206,14 +218,14 @@ public class Lift {
             case HANG:
                 setFlipTarget(0);
                 setLiftTarget(1390);
-                setRotatorTarget(3110);
+                setRotatorTarget(3000);
                 targetWrist = 0;
                 break;
             case PARK:
                 setFlipTarget(850);
                 setLiftTarget(0);
                 setRotatorTarget(0);
-                targetWrist = 0.3;
+                targetWrist = 0.4;
                 break;
         }
 
@@ -238,11 +250,10 @@ public class Lift {
             rotator.setTargetPosition(targetRotator);
             if ((Math.abs(flipper.getCurrentPosition() - targetFlip) < 50 && this.mode == Mode.HOME)) {
                 flipper.setPower(0);
-                lift.setPower(0);
             } else {
                 flipper.setPower(1);
-                lift.setPower(1);
             }
         }
+        updateLED();
     }
 }
