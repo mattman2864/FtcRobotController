@@ -1,4 +1,6 @@
-## Welcome to the Offical Pedro Pathing Quickstart!  
+# Something To Do With Waffles 18505 Robot Code
+> Checkout our [website](https://sites.google.com/view/somethingtodowithwaffles/home)
 
-Follow the steps on our [website](https://pedropathing.com/) to tune and setup!  
-Feel Free to reach out on the [Offical Pedro Pathing Discord Server](https://discord.gg/2GfC4qBP5s)!
+> Email us at wafflesftc18505@gmail.com
+
+*Code by Matt Stein and An Kieu*
