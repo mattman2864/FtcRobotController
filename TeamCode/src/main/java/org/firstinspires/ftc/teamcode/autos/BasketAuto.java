@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Lift;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "Basket")
+@Autonomous(name = "Basket", preselectTeleOp = "Two Driver")
 public class BasketAuto extends OpMode {
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
     private final Pose lift = new Pose(7, 12, Math.toRadians(-100));
@@ -262,6 +262,7 @@ public class BasketAuto extends OpMode {
         opmodeTimer.resetTimer();
 
         robotLift = new Lift(hardwareMap);
+        robotLift.resetFlip();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);

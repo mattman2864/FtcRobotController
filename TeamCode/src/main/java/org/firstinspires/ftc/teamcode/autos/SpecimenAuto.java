@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.autos;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
@@ -14,380 +16,150 @@ import org.firstinspires.ftc.teamcode.Lift;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "Specimen Auto")
+@Autonomous (name="Specimen Auto")
 public class SpecimenAuto extends OpMode {
-
-    //
-    // Poses and Points
-    //
-
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
-
-    // Lineup Poses
-
-    private final double lineupSpacing = 3.0;
-
-    private final double distanceToClip = 18.0;
-
-    private final Pose lineupPose1 = new Pose(10.6, 0, Math.toRadians(0));
-
-    private final Pose lineupPose2 = new Pose(lineupPose1.getX(), lineupPose1.getY()-lineupSpacing, Math.toRadians(0));
-
-    private final Pose lineupPose3 = new Pose(lineupPose1.getX(), lineupPose1.getY()-2*lineupSpacing, Math.toRadians(0));
-
-    private final Pose lineupPose4 = new Pose(lineupPose1.getX(), lineupPose1.getY()-3*lineupSpacing, Math.toRadians(0));
-
-    // Clipping Poses
-
-    private final Pose clippingPose1 = new Pose(lineupPose1.getX()+distanceToClip, lineupPose1.getY(), Math.toRadians(0));
-
-    private final Pose clippingPose2 = new Pose(clippingPose1.getX(), lineupPose1.getY()-lineupSpacing, Math.toRadians(0));
-
-    private final Pose clippingPose3 = new Pose(clippingPose1.getX(), lineupPose1.getY()-2*lineupSpacing, Math.toRadians(0));
-
-    private final Pose clippingPose4 = new Pose(clippingPose1.getX(), lineupPose1.getY()-3*lineupSpacing, Math.toRadians(0));
-
-    // Pushing Poses
-
-    private final Pose pushPose1 = new Pose(22.8, -26.3, 0);
-
-    private final Pose pushPose2 = new Pose(51.2, -26.3, 0);
-
-    private final Pose pushPose3 = new Pose(51.2, -38.2, 0);
-
-    private final Pose pushPose4 = new Pose(12.3, -38.2, 0);
-
-    private final Pose pushPose5 = new Pose(51.2, -48.2, 0);
-
-    private final Pose pushPose6 = new Pose(12.3, -48.2, 0);
-
-    private final Pose pushPose7 = new Pose(51.2, -58.2,0);
-
-    private final Pose pushPose8 = new Pose(12.3, -58.2, 0);
-
-    // Ground pick up Poses
-
-    private final Pose groundPickupPose1 = new Pose(18.87, -38.90, Math.toRadians(0));
-
-    private final Pose groundPickupPose2 = new Pose(groundPickupPose1.getX(), groundPickupPose1.getY() + 10, Math.toRadians(0));
-
-    private final Pose groundPickupPose3 = new Pose();
-
-    // Dropoff Poses
-
-    private final Pose dropoffPose1 = new Pose(groundPickupPose1.getX() - 10, groundPickupPose1.getY(), 0);
-
-    private final Pose dropoffPose2 = new Pose(groundPickupPose2.getX() - 10, groundPickupPose2.getY(), 0);
-
-    private final Pose dropoffPose3 = new Pose();
-
-    // Specimen Pickup Pose
-
-    private final Pose specimenPickupLineupPose = new Pose();
-
-    private final Pose specimenPickupPose = new Pose();
-
-    //
-    // Paths
-    //
-
-    PathChain initLineup;
-
-    PathChain initClip;
-
-    PathChain backtoInitLineUp;
-
-    // For ground pickup
-    PathChain toGroundPickup1;
-
-    PathChain dropoff1;
-
-    PathChain toGroundPickup2;
-
-    PathChain dropoff2;
-
-    PathChain toGroundPickup3;
-
-    PathChain dropoff3;
-
-    // For ground pushing
-
-    PathChain pushPath;
-
-    PathChain pushPath2;
-
-    PathChain pushPath3;
-
-    PathChain pushPath4;
-
-    PathChain pushPath5;
-
-    PathChain pushPath6;
-
-    PathChain pushPath7;
-
-    PathChain retrieveFirstSpecimen;
-
-    PathChain clip1;
-
-    PathChain retrieveSecondSpecimen;
-
-    PathChain clip2;
-
-    PathChain retrieveThirdSpecimen;
-
-    PathChain clip3;
-
-    PathChain park;
-
-    //
-    // Other variables
-    //
-
-    private Timer pathTimer, liftTimer, opmodeTimer;
-
+    private final Pose poleLineup = new Pose(10, 0, Math.toRadians(0));
+    private final Pose placeSpecimen = new Pose(28, 7, Math.toRadians(0));
+    private final Pose backup = new Pose(20, 7, Math.toRadians(0));
+    private final Pose midPush = new Pose(50, -30, Math.toRadians(0));
+    private final Pose pushLineup1 = new Pose(18, -24, Math.toRadians(0));
+    private final Pose pushLineup2 = new Pose(52, -36, Math.toRadians(0));
+    private final Pose pushLineup3 = new Pose(10, -40, Math.toRadians(0));
+    private final Pose pushLineup4 = new Pose(52, -44, Math.toRadians(0));
+    private final Pose pushLineup5 = new Pose(10, -48, Math.toRadians(0));
+    private final Pose pushLineup6 = new Pose(52, -52, Math.toRadians(0));
+    private final Pose pushLineup7 = new Pose(10, -55, Math.toRadians(0));
+    private Timer pathTimer, opmodeTimer;
     int pathState = 0;
-
-    int liftState = 0;
-
     Follower follower;
+    Path alignLift;
+    Path specimen;
+    Path back;
+    Path push1;
+    Path push2;
+    Path push3;
+    Path push4;
+    Path push5;
+    Path push6;
+    Path push7;
+    PathChain push;
 
-    Lift lift;
-
+    Lift robotLift;
     public void buildPaths() {
+        alignLift = new Path(
+                new BezierLine(new Point(startPose), new Point(poleLineup))
+        );
+        alignLift.setLinearHeadingInterpolation(startPose.getHeading(), poleLineup.getHeading());
 
-        initLineup = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(lineupPose1)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        specimen = new Path(
+                new BezierLine(new Point(poleLineup), new Point(placeSpecimen))
+        );
+        specimen.setLinearHeadingInterpolation(poleLineup.getHeading(), placeSpecimen.getHeading());
 
-        initClip = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(lineupPose1), new Point(clippingPose1)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        back = new Path(
+                new BezierLine(new Point(placeSpecimen), new Point(backup))
+        );
+        back.setLinearHeadingInterpolation(placeSpecimen.getHeading(), backup.getHeading());
 
-        backtoInitLineUp = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(lineupPose1), new Point(startPose)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        push1 = new Path(
+                new BezierLine(new Point(backup), new Point(pushLineup1))
+        );
+        push1.setLinearHeadingInterpolation(backup.getHeading(), pushLineup1.getHeading());
 
-        // Pushing
+        push2 = new Path(
+                new BezierCurve(new Point(pushLineup1), new Point(midPush), new Point(pushLineup2))
+        );
+        push2.setLinearHeadingInterpolation(pushLineup1.getHeading(), pushLineup2.getHeading());
 
-        pushPath = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(pushPose1)))
-                //.addPath(new BezierLine(new Point(pushPose1), new Point(pushPose2)))
-                //.addPath(new BezierLine(new Point(pushPose2), new Point(pushPose3)))
-                //.addPath(new BezierLine(new Point(pushPose3), new Point(pushPose4)))
-                //.addPath(new BezierLine(new Point(pushPose4), new Point(pushPose3)))
-                //.addPath(new BezierLine(new Point(pushPose3), new Point(pushPose5)))
-                //.addPath(new BezierLine(new Point(pushPose5), new Point(pushPose6)))
-                //.addPath(new BezierLine(new Point(pushPose6), new Point(pushPose5)))
-                //.addPath(new BezierLine(new Point(pushPose5), new Point(pushPose7)))
-                //.addPath(new BezierLine(new Point(pushPose7), new Point(pushPose8)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        push3 = new Path(
+                new BezierLine(new Point(pushLineup2), new Point(pushLineup3))
+        );
+        push3.setLinearHeadingInterpolation(pushLineup2.getHeading(), pushLineup3.getHeading());
 
-        // Ground Pickup
+        push4 = new Path(
+                new BezierCurve(new Point(pushLineup3), new Point(midPush), new Point(pushLineup4))
+        );
+        push4.setLinearHeadingInterpolation(pushLineup3.getHeading(), pushLineup4.getHeading());
 
-        toGroundPickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(clippingPose1), new Point(groundPickupPose1)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        push5 = new Path(
+                new BezierLine(new Point(pushLineup4), new Point(pushLineup5))
+        );
+        push5.setLinearHeadingInterpolation(pushLineup4.getHeading(), pushLineup5.getHeading());
 
-        dropoff1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(groundPickupPose1), new Point(dropoffPose1)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        push6 = new Path(
+                new BezierCurve(new Point(pushLineup5), new Point(midPush), new Point(pushLineup6))
+        );
+        push6.setLinearHeadingInterpolation(pushLineup5.getHeading(), pushLineup6.getHeading());
 
-        toGroundPickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(dropoffPose1), new Point(groundPickupPose2)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        dropoff2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(groundPickupPose2), new Point(dropoffPose2)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        toGroundPickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(dropoffPose2), new Point(groundPickupPose3)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        dropoff3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(groundPickupPose3), new Point(dropoffPose3)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        retrieveFirstSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(dropoffPose3), new Point(specimenPickupLineupPose)))
-                .addPath(new BezierLine(new Point(specimenPickupLineupPose), new Point(specimenPickupPose)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        clip1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupPose), new Point(lineupPose2)))
-                .addPath(new BezierLine(new Point(lineupPose2), new Point(clippingPose2)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        retrieveSecondSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(clippingPose2), new Point(specimenPickupLineupPose)))
-                .addPath(new BezierLine(new Point(specimenPickupLineupPose), new Point(specimenPickupPose)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        clip2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupPose), new Point(lineupPose3)))
-                .addPath(new BezierLine(new Point(lineupPose3), new Point(clippingPose3)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        retrieveThirdSpecimen = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(clippingPose3), new Point(specimenPickupLineupPose)))
-                .addPath(new BezierLine(new Point(specimenPickupLineupPose), new Point(specimenPickupPose)))
-                .setConstantHeadingInterpolation(0)
-                .build();
-
-        clip3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupPose), new Point(lineupPose4)))
-                .addPath(new BezierLine(new Point(lineupPose4), new Point(clippingPose4)))
-                .setConstantHeadingInterpolation(0)
-                .build();
+        push7 = new Path(
+                new BezierLine(new Point(pushLineup6), new Point(pushLineup7))
+        );
+        push7.setLinearHeadingInterpolation(pushLineup6.getHeading(), pushLineup7.getHeading());
     }
-    public void pathStateUpdate() {
+    public void autoStateUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(initLineup);
+                follower.followPath(alignLift);
+                robotLift.fineTuneFlipper(-0.15);
+                robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
                 setPathState(1);
                 break;
             case 1:
-                if (pathTimer.getElapsedTime() > 2500) {
-                    follower.followPath(initClip);
+                if (pathTimer.getElapsedTime() > 3000) {
+                    follower.followPath(specimen);
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 2500) {
-                    follower.followPath(backtoInitLineUp);
+                if (pathTimer.getElapsedTime() > 3000) {
+                    robotLift.intake(-1);
+                    follower.followPath(back);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 1000) {
-                    follower.followPath(pushPath);
-                    //setPathState(4);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    robotLift.intake(0);
+                    robotLift.setMode(Lift.Mode.HOME);
+                    follower.followPath(push1);
+                    setPathState(4);
                 }
                 break;
             case 4:
-                if (pathTimer.getElapsedTime() > 4000) {
-                    follower.followPath(toGroundPickup2);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(push2);
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (pathTimer.getElapsedTime() > 4000) {
-                    follower.followPath(dropoff2);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(push3);
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(toGroundPickup3);
-                    //setPathState(7);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(push4);
+                    setPathState(7);
                 }
                 break;
             case 7:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(dropoff3);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(push5);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(retrieveFirstSpecimen);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(push6);
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(clip1);
-                    setPathState(10);
-                }
-                break;
-            case 10:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(retrieveSecondSpecimen);
-                    setPathState(11);
-                }
-                break;
-            case 11:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(clip2);
-                    setPathState(12);
-                }
-                break;
-            case 12:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(retrieveThirdSpecimen);
-                    setPathState(13);
-                }
-                break;
-            case 13:
-                if (pathTimer.getElapsedTime() > 5000) {
-                    follower.followPath(clip3);
-                    setPathState(14);
-                }
-                break;
-            case 14:
-                follower.followPath(park);
-            default:
-                break;
-        }
-    }
-
-    public void liftStateUpdate() {
-        switch (liftState) {
-            case 0:
-                lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
-                setLiftState(1);
-                break;
-            case 1:
-                if (liftTimer.getElapsedTime() > 10500)
-                {
-                    lift.setMode(Lift.Mode.HOME);
-                    lift.intake(0);
-                    //setLiftState(2);
-                } else if (liftTimer.getElapsedTime() > 10000)
-                {
-                    lift.intake(-1);
-                }
-                break;
-            case 2:
-                if (liftTimer.getElapsedTime() > 3200) {
-                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
-                    lift.intake(0);
-                    setLiftState(2);
-                } else if (liftTimer.getElapsedTime() > 3000)
-                {
-                    lift.setMode(Lift.Mode.FRONT_PICKUP_DROP);
-                    lift.intake(1);
-                    setLiftState(2);
-                } else if (liftTimer.getElapsedTime() > 2500) {
-                    lift.setMode(Lift.Mode.FRONT_PICKUP);
-                }
-                break;
-            case 3:
-                if (liftTimer.getElapsedTime() > 2500) {
-                    lift.intake(0);
-                    setLiftState(4);
-                } else if (liftTimer.getElapsedTime() > 2000) {
-                    lift.intake(-1);
-                }
-                else if (liftTimer.getElapsedTime() > 1000)
-                {
-                    lift.setMode(Lift.Mode.SPECIMEN_PICKUP);
-                    //setLiftState(4);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(push7);
+                    setPathState(-1);
                 }
                 break;
         }
@@ -396,53 +168,39 @@ public class SpecimenAuto extends OpMode {
         pathState = pState;
         pathTimer.resetTimer();
     }
-
-    public void setLiftState(int lState) {
-        liftState = lState;
-        liftTimer.resetTimer();
-    }
-
     public double calculatePoseError(Pose position, Pose target) {
         return Math.abs((target.getX() - position.getX()) + (target.getY() - position.getY())
                 + 2 * (target.getHeading() - position.getHeading()));
     }
-
     @Override
     public void init() {
         pathTimer = new Timer();
-        liftTimer = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        lift = new Lift(hardwareMap);
+        robotLift = new Lift(hardwareMap);
+        robotLift.resetFlip();
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
     }
-
     @Override
     public void start() {
         opmodeTimer.resetTimer();
         setPathState(0);
-        setLiftState(0);
     }
-
     @Override
     public void loop() {
         follower.update();
+        autoStateUpdate();
+        robotLift.update();
 
-        pathStateUpdate();
-        liftStateUpdate();
-
-        lift.update();
-
-        telemetry.addData("Path State:", pathState);
-        telemetry.addData("Lift State:", liftState);
-        telemetry.addData("X:", follower.getPose().getX());
-        telemetry.addData("Y:", follower.getPose().getY());
-        telemetry.addData("Heading:", follower.getPose().getHeading());
+        telemetry.addData("path state", pathState);
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
         telemetry.update();
     }
 }

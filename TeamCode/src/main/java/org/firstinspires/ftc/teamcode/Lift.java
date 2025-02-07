@@ -137,6 +137,11 @@ public class Lift {
         }
     }
 
+    public void resetFlip() {
+        flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
     public void update() {
         int flipTweak = (int)(100 * adjustFlip);
         int liftTweak = (int)(300 * adjustLift);
@@ -162,13 +167,13 @@ public class Lift {
                 intake(1);
                 break;
             case REAR_PICKUP:
-                setFlipTarget(60);
+                setFlipTarget(80);
                 setLiftTarget(200);
                 setRotatorTarget(3000);
                 targetWrist = 0.68;
                 break;
             case REAR_PICKUP_DROP:
-                setFlipTarget(0);
+                setFlipTarget(80);
                 setLiftTarget(0);
                 setRotatorTarget(3000);
                 targetWrist = 0.68;
@@ -229,10 +234,7 @@ public class Lift {
                 break;
         }
 
-        if (touch.isPressed() && mode == Mode.HOME) {
-            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
+
 
         if ((Math.abs(rotator.getCurrentPosition() - targetRotator) > 100)) {
             if (mode != Mode.SPECIMEN_PLACE_HIGH) {
@@ -248,6 +250,10 @@ public class Lift {
             flipper.setTargetPosition(targetFlip);
             wrist.setPosition(targetWrist);
             rotator.setTargetPosition(targetRotator);
+            if (touch.isPressed() && mode == Mode.HOME) {
+                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
             if ((Math.abs(flipper.getCurrentPosition() - targetFlip) < 50 && this.mode == Mode.HOME)) {
                 flipper.setPower(0);
             } else {

@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "test auto")
+@Autonomous(name = "test auto", group = "testing")
 public class TestAuto extends OpMode {
     // Set Up Poses
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
