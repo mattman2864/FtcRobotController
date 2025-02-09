@@ -20,8 +20,8 @@ public class BasketAuto extends OpMode {
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
     private final Pose lift = new Pose(7, 12, Math.toRadians(-100));
     private final Pose backupLift = new Pose(10, 15, Math.toRadians(180));
-    private final Pose outtake = new Pose(8.5, 22, Math.toRadians(-42));
-    private final Pose firstPickup = new Pose(23, 14, Math.toRadians(180));
+    private final Pose outtake = new Pose(7.5, 22, Math.toRadians(-42));
+    private final Pose firstPickup = new Pose(23, 14.5, Math.toRadians(180));
     private final Pose secondPickup = new Pose(23, 24, Math.toRadians(180));
     private final Pose parkLineup = new Pose(53, 29, Math.toRadians(-90));
     private final Pose pushBlock = new Pose(2, 29, -90);

@@ -113,6 +113,9 @@ public class Lift {
         intakeRight.setPower(speed);
     }
     public void setMode(Mode newMode) {
+        if (this.mode == Mode.HOME && stateTimer.milliseconds() > 1500) {
+            resetFlip();
+        }
         this.mode = newMode;
         stateTimer.reset();
     }
@@ -155,13 +158,13 @@ public class Lift {
                 break;
             case FRONT_PICKUP:
                 setFlipTarget(1300);
-                setLiftTarget(0);
+                setLiftTarget(500);
                 setRotatorTarget(0);
                 targetWrist = 0;
                 break;
             case FRONT_PICKUP_DROP:
                 setFlipTarget(1550);
-                setLiftTarget(0);
+                setLiftTarget(500);
                 setRotatorTarget(0);
                 targetWrist = 0.05;
                 intake(1);
@@ -173,7 +176,7 @@ public class Lift {
                 targetWrist = 0.68;
                 break;
             case REAR_PICKUP_DROP:
-                setFlipTarget(80);
+                setFlipTarget(0);
                 setLiftTarget(0);
                 setRotatorTarget(3000);
                 targetWrist = 0.68;
@@ -204,7 +207,7 @@ public class Lift {
                 targetWrist = 0.12;
                 break;
             case SPECIMEN_PLACE_HIGH:
-                setFlipTarget(1550 + flipTweak);
+                setFlipTarget(1550 + flipTweak * 2);
                 setLiftTarget(2130 + liftTweak);
                 setRotatorTarget(2090);
                 targetWrist = 0;
@@ -222,8 +225,8 @@ public class Lift {
                 break;
             case HANG:
                 setFlipTarget(0);
-                setLiftTarget(1390);
-                setRotatorTarget(3000);
+                setLiftTarget(1390 + liftTweak*3);
+                setRotatorTarget(3050);
                 targetWrist = 0;
                 break;
             case PARK:
@@ -242,7 +245,7 @@ public class Lift {
             }
             lift.setTargetPosition(50);
             wrist.setPosition(0);
-            if (Math.abs(flipper.getCurrentPosition()) < 50 && Math.abs(lift.getCurrentPosition()) < 100 || stateTimer.milliseconds() > 1000) {
+            if (Math.abs(flipper.getCurrentPosition()) < 50 && Math.abs(lift.getCurrentPosition()) < 80 || stateTimer.milliseconds() > 1000) {
                 rotator.setTargetPosition(targetRotator);
             }
         } else {
@@ -254,7 +257,7 @@ public class Lift {
                 lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
-            if ((Math.abs(flipper.getCurrentPosition() - targetFlip) < 50 && this.mode == Mode.HOME)) {
+            if (stateTimer.milliseconds() > 1200 && this.mode == Mode.HOME) {
                 flipper.setPower(0);
             } else {
                 flipper.setPower(1);
