@@ -2,14 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Util.WafflesUtil.clamp;
 
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
-import com.ThermalEquilibrium.homeostasis.Utils.Timer;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -25,21 +21,15 @@ public class Lift {
     Servo wrist;
     CRServo intakeLeft;
     CRServo intakeRight;
-
     public int targetRotator = 0;
     public int targetLift = 0;
     public int targetFlip = 0;
     public double targetWrist;
 
-    BasicPID rotatorController;
-    BasicPID liftController;
-    BasicPID flipperController;
-
     public int rotatorPosition;
     public int liftPosition;
     public int flipPosition;
     public double wristPosition;
-
     public enum Mode {
         HOME,
         FRONT_PICKUP,
@@ -62,7 +52,7 @@ public class Lift {
     double adjustLift = 0;
     ColorSensor color;
     Servo led;
-
+    double intakePower;
     public Lift(HardwareMap map) {
         hardwareMap = map;
         rotator = hardwareMap.get(DcMotor.class, Config.Rotator.rotator);
@@ -89,11 +79,9 @@ public class Lift {
 
         flipper.setTargetPosition(targetFlip);
         flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        flipper.setPower(0.8);
 
         stateTimer = new ElapsedTime();
         stateTimer.reset();
-//      mag1 = hardwareMap.get(DigitalChannel.class, "mag1");
     }
 
     private void setRotatorTarget(int target) {
@@ -103,31 +91,27 @@ public class Lift {
     private void setLiftTarget(int target) {
         targetLift = (int)clamp(target, Config.Lift.liftMin, Config.Lift.liftMax);
     }
-
     private void setFlipTarget(int target) {
-        targetFlip = (int)clamp(target, Config.Arm.flipMin, Config.Arm.flipMax);
+        targetFlip = (int)(clamp(target, Config.Arm.flipMin, Config.Arm.flipMax));
     }
     public void intake(double speed) {
-        speed *= 0.8; // servo speed coefficient
+        speed *= 1; // servo speed coefficient
         intakeLeft.setPower(-speed);
         intakeRight.setPower(speed);
     }
     public void setMode(Mode newMode) {
-        if (this.mode == Mode.HOME && stateTimer.milliseconds() > 1500) {
+        if (this.mode == Mode.HOME && stateTimer.milliseconds() > 2000 && rotator.getCurrentPosition() < 100 && lift.getCurrentPosition() < 100) {
             resetFlip();
         }
         this.mode = newMode;
         stateTimer.reset();
     }
-
     public void fineTuneFlipper(double amount) {
         adjustFlip = amount;
     }
-
     public void fineTuneLift(double amount) {
         adjustLift = amount;
     }
-
     private void updateLED() {
         if (color.red() > color.blue() && color.red() > color.green() && color.red() > 130) {
             led.setPosition(0.28); // RED
@@ -139,12 +123,10 @@ public class Lift {
             led.setPosition(0); // OFF
         }
     }
-
     public void resetFlip() {
         flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flipper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-
     public void update() {
         int flipTweak = (int)(100 * adjustFlip);
         int liftTweak = (int)(300 * adjustLift);
@@ -154,19 +136,19 @@ public class Lift {
                 setFlipTarget(0);
                 setLiftTarget(0);
                 setRotatorTarget(0);
-                targetWrist = 0;
+                targetWrist = 0.3;
                 break;
             case FRONT_PICKUP:
-                setFlipTarget(1300);
+                setFlipTarget(1400);
                 setLiftTarget(500);
                 setRotatorTarget(0);
-                targetWrist = 0;
+                targetWrist = 0.3;
                 break;
             case FRONT_PICKUP_DROP:
-                setFlipTarget(1550);
+                setFlipTarget(1600);
                 setLiftTarget(500);
                 setRotatorTarget(0);
-                targetWrist = 0.05;
+                targetWrist = 0.3;
                 intake(1);
                 break;
             case REAR_PICKUP:
@@ -180,7 +162,7 @@ public class Lift {
                 setLiftTarget(0);
                 setRotatorTarget(3000);
                 targetWrist = 0.68;
-                intake(0.8);
+                intake(1);
                 break;
             case HIGH_BASKET:
                 setFlipTarget(1000 - flipTweak);
@@ -195,10 +177,10 @@ public class Lift {
                 targetWrist = 1;
                 break;
             case SPECIMEN_PICKUP:
-                setFlipTarget(153 - flipTweak);
+                setFlipTarget(200 - flipTweak);
                 setLiftTarget(60);
                 setRotatorTarget(1940);
-                targetWrist = 0.33;
+                targetWrist = 0.35;
                 break;
             case SPECIMEN_PLACE_LOW:
                 setFlipTarget(1670 + flipTweak);
@@ -207,10 +189,10 @@ public class Lift {
                 targetWrist = 0.12;
                 break;
             case SPECIMEN_PLACE_HIGH:
-                setFlipTarget(1550 + flipTweak * 2);
+                setFlipTarget(1535 + flipTweak * 2);
                 setLiftTarget(2130 + liftTweak);
                 setRotatorTarget(2090);
-                targetWrist = 0;
+                targetWrist = 0.15;
                 break;
             case TESTING:
                 setFlipTarget(targetFlip);
@@ -236,16 +218,13 @@ public class Lift {
                 targetWrist = 0.4;
                 break;
         }
-
-
-
         if ((Math.abs(rotator.getCurrentPosition() - targetRotator) > 100)) {
             if (mode != Mode.SPECIMEN_PLACE_HIGH) {
                 flipper.setTargetPosition(0);
             }
             lift.setTargetPosition(50);
             wrist.setPosition(0);
-            if (Math.abs(flipper.getCurrentPosition()) < 50 && Math.abs(lift.getCurrentPosition()) < 80 || stateTimer.milliseconds() > 1000) {
+            if (Math.abs(flipper.getCurrentPosition()) < 50 && Math.abs(lift.getCurrentPosition()) < 80 || stateTimer.milliseconds() > 1000 || mode == Mode.SPECIMEN_PLACE_HIGH) {
                 rotator.setTargetPosition(targetRotator);
             }
         } else {
@@ -257,11 +236,11 @@ public class Lift {
                 lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
-            if (stateTimer.milliseconds() > 1200 && this.mode == Mode.HOME) {
-                flipper.setPower(0);
-            } else {
-                flipper.setPower(1);
-            }
+        }
+        if (stateTimer.milliseconds() > 1500 && this.mode == Mode.HOME) {
+            flipper.setPower(0);
+        } else {
+            flipper.setPower(1);
         }
         updateLED();
     }

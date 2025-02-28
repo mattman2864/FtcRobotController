@@ -63,19 +63,12 @@ public class SingleDriver extends LinearOpMode {
 
                 //Drive
                 drive.joystickDrive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
-
-                telemetry.addLine("CONTROL: COMMAND");
-                telemetry.addLine("A: HOME");
-                telemetry.addLine("B: FRONTPICKUP PRESET");
-                telemetry.addLine("B - DPAD DOWN: FRONTPICKUP PICKUP");
-                telemetry.addLine("X: HIGH BASKET");
-                telemetry.addLine("Y: LOW BASKET");
-                telemetry.addLine("LEFT BUMPER/RIGHT BUMPER: SPECIMEN PLACE HIGH");
-                telemetry.addLine("LB/RB - LB: SPECIMENPICKUP LOW");
-                telemetry.addLine("LB/RB - RB: SPECIMENPICKUP HIGH");
-                telemetry.addLine("RIGHT TRIGGER: INTAKE IN");
-                telemetry.addLine("LEFT TRIGGER: INTAKE OUT");
-
+                telemetry.addData("target", lift.targetFlip);
+                telemetry.addData("position", lift.flipper.getCurrentPosition());
+                telemetry.addData("power", lift.flipper.getPower());
+                telemetry.addData("stateTimer", lift.stateTimer.milliseconds());
+                telemetry.addData("motorMode", lift.flipper.getMode());
+                telemetry.addData("stateMode", lift.mode);
                 lift.update();
                 telemetry.update();
                 controller.update();
