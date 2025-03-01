@@ -177,7 +177,7 @@ public class Lift {
                 targetWrist = 1;
                 break;
             case SPECIMEN_PICKUP:
-                setFlipTarget(200 - flipTweak);
+                setFlipTarget(210 - flipTweak);
                 setLiftTarget(60);
                 setRotatorTarget(1940);
                 targetWrist = 0.35;

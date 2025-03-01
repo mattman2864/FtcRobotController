@@ -21,8 +21,14 @@ public class SpecimenAuto extends OpMode {
     // PLACING SPECIMEN
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // Start
     private final Pose poleLineup = new Pose(10, 0, Math.toRadians(0)); // Lift position
-    private final Pose placeSpecimen = new Pose(24, 7, Math.toRadians(0)); // Place position
+    private final Pose placeSpecimen0 = new Pose(24, 8, Math.toRadians(0)); // Place position
+
+    private final Pose placeSpecimen1 = new Pose(24, 6, Math.toRadians(0)); // Place position
+    private final Pose placeSpecimen2 = new Pose(24, 4, Math.toRadians(0)); // Place position
+    private final Pose placeSpecimen3 = new Pose(24, 2, Math.toRadians(0)); // Place position
     private final Pose backup = new Pose(20, 7, Math.toRadians(0)); // Backing up after lifting
+
+
     // PUSHING
     private final Pose midPush = new Pose(52, -24 , Math.toRadians(0)); // Middle position for bezier curve
     private final Pose pushLineup1 = new Pose(18, -25, Math.toRadians(0)); // Back position before push
@@ -34,22 +40,23 @@ public class SpecimenAuto extends OpMode {
     int pathState = 0;
     Follower follower;
     Path alignLift;
-    Path specimen;
-    Path back;
+    Path specimen0;
+    Path back0;
+    Path specimen1;
+    Path back1;
+    Path specimen2;
+    Path back2;
+    Path specimen3;
+    Path back3;
     Path push1;
     Path push2;
     Path push3;
     Path push4;
     Path push5;
-    Path push6;
-    Path push7;
     Path lineup2;
     Path lineup3;
     Path park;
-
     PathChain pushChain1;
-    PathChain pushChain2;
-
     Lift robotLift;
     public Path createPathFromPoints(Pose pose1, Pose pose2) {
         Path newPath = new Path(
@@ -60,13 +67,24 @@ public class SpecimenAuto extends OpMode {
     }
     public void buildPaths() {
         alignLift = createPathFromPoints(startPose, poleLineup);
-        specimen = createPathFromPoints(poleLineup, placeSpecimen);
-        back = createPathFromPoints(placeSpecimen, backup);
+        specimen0 = createPathFromPoints(poleLineup, placeSpecimen0);
+        back0 = createPathFromPoints(placeSpecimen0, backup);
+        specimen1 = createPathFromPoints(poleLineup, placeSpecimen1);
+        back1 = createPathFromPoints(placeSpecimen1, backup);
+        specimen2 = createPathFromPoints(poleLineup, placeSpecimen2);
+        back2 = createPathFromPoints(placeSpecimen2, backup);
+        specimen3 = createPathFromPoints(poleLineup, placeSpecimen3);
+        back3 = createPathFromPoints(placeSpecimen3, backup);
         push1 = createPathFromPoints(backup, pushLineup1);
         push2 = new Path(
                 new BezierCurve(new Point(pushLineup1), new Point(midPush), new Point(pushLineup2))
         );
         push2.setLinearHeadingInterpolation(pushLineup1.getHeading(), pushLineup2.getHeading());
+        pushChain1 = follower.pathBuilder()
+                .addPath(push1)
+                .addPath(push2)
+                .build();
+
         push3 = createPathFromPoints(pushLineup2, pushLineup3);
         push4 = new Path(
                 new BezierCurve(new Point(backup), new Point(startPose), new Point(pushLineup3), new Point(midPush), new Point(pushLineup4))
@@ -76,11 +94,6 @@ public class SpecimenAuto extends OpMode {
         lineup2 = createPathFromPoints(pushLineup3, poleLineup);
         lineup3 = createPathFromPoints(pushLineup5, poleLineup);
         park = createPathFromPoints(backup, pushLineup3);
-
-        pushChain1 = follower.pathBuilder()
-                .addPath(push1)
-                .addPath(push2)
-                .build();
 
     }
     public void autoStateUpdate() {
@@ -92,20 +105,20 @@ public class SpecimenAuto extends OpMode {
                 setPathState(1);
                 break;
             case 1:
-                if (pathTimer.getElapsedTime() > 3000) {
-                    follower.followPath(specimen);
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(specimen0);
                     setPathState(2);
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 800) {
                     robotLift.intake(-1);
-                    follower.followPath(back);
+                    follower.followPath(back0);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 1000) {
+                if (pathTimer.getElapsedTime() > 500) {
                     robotLift.intake(0);
                     follower.followPath(pushChain1);
                     robotLift.setMode(Lift.Mode.SPECIMEN_PICKUP);
@@ -113,20 +126,20 @@ public class SpecimenAuto extends OpMode {
                 }
                 break;
             case 4:
-                if (pathTimer.getElapsedTime() > 3000) {
+                if (pathTimer.getElapsedTime() > 2500) {
                     robotLift.intake(1);
                     follower.followPath(push3);
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (pathTimer.getElapsedTime() > 2500) {
+                if (pathTimer.getElapsedTime() > 1800) {
                     robotLift.intake(0);
                     setPathState(6);
                 }
                 break;
             case 6:
-                if (pathTimer.getElapsedTime() > 500) {
+                if (pathTimer.getElapsedTime() > 200) {
                     follower.followPath(lineup2);
                     robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
                     robotLift.fineTuneFlipper(0.25);
@@ -134,46 +147,46 @@ public class SpecimenAuto extends OpMode {
                 }
                 break;
             case 7:
-                if (pathTimer.getElapsedTime() > 1500) {
-                    follower.followPath(specimen);
+                if (pathTimer.getElapsedTime() > 1000) {
+                    follower.followPath(specimen1);
                     setPathState(8);
                 }
                 break;
             case 8:
-                if (pathTimer.getElapsedTime() > 1000) {
+                if (pathTimer.getElapsedTime() > 800) {
                     robotLift.intake(-1);
-                    follower.followPath(back);
+                    follower.followPath(back1);
                     setPathState(9);
                 }
                 break;
             case 9:
-                if (pathTimer.getElapsedTime() > 1000) {
+                if (pathTimer.getElapsedTime() > 200) {
                     robotLift.intake(0);
                     setPathState(10);
                 }
                 break;
             case 10:
-                if (pathTimer.getElapsedTime() > 1600) {
+                if (pathTimer.getElapsedTime() > 400) {
                     follower.followPath(push4);
                     robotLift.setMode(Lift.Mode.SPECIMEN_PICKUP);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (pathTimer.getElapsedTime() > 3000) {
+                if (pathTimer.getElapsedTime() > 2800) {
                     follower.followPath(push5);
                     robotLift.intake(1);
                     setPathState(12);
                 }
                 break;
             case 12:
-                if (pathTimer.getElapsedTime() > 2500) {
+                if (pathTimer.getElapsedTime() > 1800) {
                     robotLift.intake(0);
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (pathTimer.getElapsedTime() > 500) {
+                if (pathTimer.getElapsedTime() > 200) {
                     follower.followPath(lineup3);
                     robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
                     robotLift.fineTuneFlipper(0.25);
@@ -181,20 +194,67 @@ public class SpecimenAuto extends OpMode {
                 }
                 break;
             case 14:
-                if (pathTimer.getElapsedTime() > 2000) {
-                    follower.followPath(specimen);
+                if (pathTimer.getElapsedTime() > 1200) {
+                    follower.followPath(specimen2);
                     setPathState(15);
                 }
                 break;
             case 15:
                 if (pathTimer.getElapsedTime() > 1000) {
                     robotLift.intake(-1);
-                    follower.followPath(back);
+                    follower.followPath(back2);
                     setPathState(16);
                 }
                 break;
             case 16:
+                if (pathTimer.getElapsedTime() > 500) {
+                    robotLift.intake(0);
+                    setPathState(17);
+                }
+                break;
+            case 17:
+                if (pathTimer.getElapsedTime() > 200) {
+                    follower.followPath(push4);
+                    robotLift.setMode(Lift.Mode.SPECIMEN_PICKUP);
+                    setPathState(18);
+                }
+                break;
+            case 18:
+                if (pathTimer.getElapsedTime() > 3000) {
+                    follower.followPath(push5);
+                    robotLift.intake(1);
+                    setPathState(19);
+                }
+                break;
+            case 19:
+                if (pathTimer.getElapsedTime() > 1800) {
+                    robotLift.intake(0);
+                    setPathState(20);
+                }
+                break;
+            case 20:
+                if (pathTimer.getElapsedTime() > 200) {
+                    follower.followPath(lineup3);
+                    robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
+                    robotLift.fineTuneFlipper(0.25);
+                    setPathState(21);
+                }
+                break;
+            case 21:
+                if (pathTimer.getElapsedTime() > 1200) {
+                    follower.followPath(specimen3);
+                    setPathState(22);
+                }
+                break;
+            case 22:
                 if (pathTimer.getElapsedTime() > 800) {
+                    robotLift.intake(-1);
+                    follower.followPath(back3);
+                    setPathState(23);
+                }
+                break;
+            case 23:
+                if (pathTimer.getElapsedTime() > 300) {
                     robotLift.intake(0);
                     follower.followPath(park);
                     robotLift.setMode(Lift.Mode.HOME);
