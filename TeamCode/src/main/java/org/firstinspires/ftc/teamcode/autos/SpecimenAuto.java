@@ -20,12 +20,12 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 public class SpecimenAuto extends OpMode {
     // PLACING SPECIMEN
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // Start
-    private final Pose poleLineup = new Pose(10, 0, Math.toRadians(0)); // Lift position
-    private final Pose placeSpecimen0 = new Pose(24, 8, Math.toRadians(0)); // Place position
+    private final Pose poleLineup = new Pose(10, 2, Math.toRadians(0)); // Lift position
+    private final Pose placeSpecimen0 = new Pose(24, 13, Math.toRadians(0)); // Place position
 
-    private final Pose placeSpecimen1 = new Pose(24, 6, Math.toRadians(0)); // Place position
-    private final Pose placeSpecimen2 = new Pose(24, 4, Math.toRadians(0)); // Place position
-    private final Pose placeSpecimen3 = new Pose(24, 2, Math.toRadians(0)); // Place position
+    private final Pose placeSpecimen1 = new Pose(24, 10, Math.toRadians(0)); // Place position
+    private final Pose placeSpecimen2 = new Pose(24, 7, Math.toRadians(0)); // Place position
+    private final Pose placeSpecimen3 = new Pose(24, 4, Math.toRadians(0)); // Place position
     private final Pose backup = new Pose(20, 7, Math.toRadians(0)); // Backing up after lifting
 
 
@@ -100,12 +100,11 @@ public class SpecimenAuto extends OpMode {
         switch (pathState) {
             case 0:
                 follower.followPath(alignLift);
-                robotLift.fineTuneFlipper(0.1);
                 robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
                 setPathState(1);
                 break;
             case 1:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 2500) {
                     follower.followPath(specimen0);
                     setPathState(2);
                 }
@@ -142,7 +141,6 @@ public class SpecimenAuto extends OpMode {
                 if (pathTimer.getElapsedTime() > 200) {
                     follower.followPath(lineup2);
                     robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
-                    robotLift.fineTuneFlipper(0.25);
                     setPathState(7);
                 }
                 break;
@@ -189,7 +187,6 @@ public class SpecimenAuto extends OpMode {
                 if (pathTimer.getElapsedTime() > 200) {
                     follower.followPath(lineup3);
                     robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
-                    robotLift.fineTuneFlipper(0.25);
                     setPathState(14);
                 }
                 break;
@@ -236,7 +233,6 @@ public class SpecimenAuto extends OpMode {
                 if (pathTimer.getElapsedTime() > 200) {
                     follower.followPath(lineup3);
                     robotLift.setMode(Lift.Mode.SPECIMEN_PLACE_HIGH);
-                    robotLift.fineTuneFlipper(0.25);
                     setPathState(21);
                 }
                 break;

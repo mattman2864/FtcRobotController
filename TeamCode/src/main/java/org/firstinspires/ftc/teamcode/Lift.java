@@ -96,12 +96,17 @@ public class Lift {
     }
     public void intake(double speed) {
         speed *= 1; // servo speed coefficient
-        intakeLeft.setPower(-speed);
-        intakeRight.setPower(speed);
+        if (mode == Mode.FRONT_PICKUP) {
+            if (speed < 0) speed = -1;
+            else if (speed > 0) speed = 1;
+        }
+        intakeLeft.setPower(speed);
+        intakeRight.setPower(-speed);
     }
     public void setMode(Mode newMode) {
         if (this.mode == Mode.HOME && stateTimer.milliseconds() > 2000 && rotator.getCurrentPosition() < 100 && lift.getCurrentPosition() < 100) {
             resetFlip();
+            led.setPosition(0.5);
         }
         this.mode = newMode;
         stateTimer.reset();
@@ -139,17 +144,10 @@ public class Lift {
                 targetWrist = 0.3;
                 break;
             case FRONT_PICKUP:
-                setFlipTarget(1400);
+                setFlipTarget(1400 + flipTweak * 2);
                 setLiftTarget(500);
                 setRotatorTarget(0);
                 targetWrist = 0.3;
-                break;
-            case FRONT_PICKUP_DROP:
-                setFlipTarget(1600);
-                setLiftTarget(500);
-                setRotatorTarget(0);
-                targetWrist = 0.3;
-                intake(1);
                 break;
             case REAR_PICKUP:
                 setFlipTarget(80);
@@ -177,7 +175,7 @@ public class Lift {
                 targetWrist = 1;
                 break;
             case SPECIMEN_PICKUP:
-                setFlipTarget(210 - flipTweak);
+                setFlipTarget(215 - flipTweak);
                 setLiftTarget(60);
                 setRotatorTarget(1940);
                 targetWrist = 0.35;
@@ -207,7 +205,7 @@ public class Lift {
                 break;
             case HANG:
                 setFlipTarget(0);
-                setLiftTarget(1390 + liftTweak*3);
+                setLiftTarget(2000 + liftTweak*3);
                 setRotatorTarget(3050);
                 targetWrist = 0;
                 break;

@@ -19,21 +19,6 @@ public class TwoDriver extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (lift.mode == Lift.Mode.FRONT_PICKUP || lift.mode == Lift.Mode.FRONT_PICKUP_DROP) {
-                    if (controller1.dpadDown()) {
-                        lift.setMode(Lift.Mode.FRONT_PICKUP_DROP);
-                    } else {
-                        lift.setMode(Lift.Mode.FRONT_PICKUP);
-                    }
-                } else if (lift.mode == Lift.Mode.REAR_PICKUP || lift.mode == Lift.Mode.REAR_PICKUP_DROP) {
-                    if (controller1.dpadDown()) {
-                        lift.setMode(Lift.Mode.REAR_PICKUP_DROP);
-                    } else {
-                        lift.setMode(Lift.Mode.REAR_PICKUP);
-                    }
-                } else if (controller1.dpadLeft()) {
-                    lift.setMode(Lift.Mode.REAR_PICKUP);
-                }
 
                 if (controller1.A()) {
                     lift.setMode(Lift.Mode.HOME);

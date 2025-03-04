@@ -18,22 +18,6 @@ public class SingleDriver extends LinearOpMode {
         if (opModeIsActive()) {
             while (opModeIsActive()) {
 
-                if (lift.mode == Lift.Mode.FRONT_PICKUP || lift.mode == Lift.Mode.FRONT_PICKUP_DROP) {
-                    if (controller.dpadDown()) {
-                        lift.setMode(Lift.Mode.FRONT_PICKUP_DROP);
-                    } else {
-                        lift.setMode(Lift.Mode.FRONT_PICKUP);
-                    }
-                } else if (lift.mode == Lift.Mode.REAR_PICKUP || lift.mode == Lift.Mode.REAR_PICKUP_DROP) {
-                    if (controller.dpadDown()) {
-                        lift.setMode(Lift.Mode.REAR_PICKUP_DROP);
-                    } else {
-                        lift.setMode(Lift.Mode.REAR_PICKUP);
-                    }
-                } else if (controller.dpadLeft()) {
-                    lift.setMode(Lift.Mode.REAR_PICKUP);
-                }
-
                 if (controller.A()) {
                     lift.setMode(Lift.Mode.HOME);
                 } else if (controller.B()) {
@@ -63,9 +47,12 @@ public class SingleDriver extends LinearOpMode {
 
                 //Drive
                 drive.joystickDrive(controller.left_stick_x, controller.left_stick_y, controller.right_stick_x);
-                telemetry.addData("target", lift.targetFlip);
-                telemetry.addData("position", lift.flipper.getCurrentPosition());
-                telemetry.addData("power", lift.flipper.getPower());
+                telemetry.addData("flip target", lift.targetFlip);
+                telemetry.addData("flip position", lift.flipper.getCurrentPosition());
+                telemetry.addData("flip power", lift.flipper.getPower());
+                telemetry.addData("rotator target", lift.targetRotator);
+                telemetry.addData("rotator position", lift.rotator.getCurrentPosition());
+                telemetry.addData("rotator power", lift.rotator.getPower());
                 telemetry.addData("stateTimer", lift.stateTimer.milliseconds());
                 telemetry.addData("motorMode", lift.flipper.getMode());
                 telemetry.addData("stateMode", lift.mode);
