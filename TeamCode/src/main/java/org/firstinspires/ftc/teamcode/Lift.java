@@ -33,7 +33,6 @@ public class Lift {
     public enum Mode {
         HOME,
         FRONT_PICKUP,
-        FRONT_PICKUP_DROP,
         REAR_PICKUP,
         REAR_PICKUP_DROP,
         HIGH_BASKET,
@@ -52,7 +51,6 @@ public class Lift {
     double adjustLift = 0;
     ColorSensor color;
     Servo led;
-    double intakePower;
     public Lift(HardwareMap map) {
         hardwareMap = map;
         rotator = hardwareMap.get(DcMotor.class, Config.Rotator.rotator);
@@ -144,10 +142,10 @@ public class Lift {
                 targetWrist = 0.3;
                 break;
             case FRONT_PICKUP:
-                setFlipTarget(1400 + flipTweak * 2);
+                setFlipTarget(1320 + flipTweak * 2);
                 setLiftTarget(500);
                 setRotatorTarget(0);
-                targetWrist = 0.3;
+                targetWrist = 0.15;
                 break;
             case REAR_PICKUP:
                 setFlipTarget(80);
@@ -187,7 +185,7 @@ public class Lift {
                 targetWrist = 0.12;
                 break;
             case SPECIMEN_PLACE_HIGH:
-                setFlipTarget(1535 + flipTweak * 2);
+                setFlipTarget(1550 + flipTweak * 2);
                 setLiftTarget(2130 + liftTweak);
                 setRotatorTarget(2090);
                 targetWrist = 0.15;

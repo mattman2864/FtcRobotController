@@ -12,13 +12,11 @@ public class Config {
     public static class Lift {
         public static String lift = "lift";
         public static int liftMin = 0;
-        public static int liftIntake = 3500; // TODO: find lift position for intake
         public static int liftMax = 4500; // REVERSE
     }
     public static class Rotator {
         public static String rotator = "rotator";
         public static int rotatorMin = 0;
-        public static int rotatorIntake = 100; // TODO: Find rotator position for intake
         public static int rotatorMax = 3000; // REVERSE
     }
     public static class Arm {
@@ -31,7 +29,6 @@ public class Config {
         public static String wrist = "wrist";
         public static String intakeLeft = "intakeLeft";
         public static String intakeRight = "intakeRight";
-        public static String color = "color";
     }
     public static class Color {
         public static String color = "color";
